@@ -52,7 +52,7 @@ public class nonogramSolver : MonoBehaviour {
                     if (line.Contains("COLUMNAS")) {
                         rows = false;
                     }
-                    else {
+                    else {  
                         string[] words = line.Split(',');
 
                         List<int> listToAdd = new List<int>();
@@ -84,6 +84,12 @@ public class nonogramSolver : MonoBehaviour {
     }
 
    
+    void simpleBoxes() {
+
+    }
+    void simpleSpaces() {
+
+    }
 
 
 }
