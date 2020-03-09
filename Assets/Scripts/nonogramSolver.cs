@@ -10,12 +10,19 @@ public class nonogramSolver : MonoBehaviour {
     private List<List<int>> Y = new List<List<int>>();
     private bool skip = false;
 
+    public GameObject cell;
+
+
     // Start is called before the first frame update
     void Start() {
-
         createCluesMatrix();
         createLogicalMatrix();
 
+        Board board = Board.MakeFooObject(this.height, this.lenght);
+        //board.setHeight(this.height);
+        //board.setWidth(this.lenght);
+        Debug.Log(this.lenght);
+        board.draw(cell);
     }
 
     // Update is called once per frame
@@ -24,13 +31,10 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     void createLogicalMatrix() {
-
-        Debug.Log(this.height);
-        Debug.Log(this.lenght);
-
-        List<int> row = new List<int>(); ;
-        for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 1; j++) {
+        
+        for (int i = 0; i < this.height; i++) {
+            List<int> row = new List<int>();
+            for (int j = 0; j < this.lenght; j++) {
                 row.Add(0);
             }
             baseNonogram.Add(row);
@@ -61,7 +65,7 @@ public class nonogramSolver : MonoBehaviour {
                             listToAdd.Add(int.Parse(number.Trim()));
                             //Debug.Log(int.Parse(number.Trim()));
                         }
-
+                        
                         //string test = "[";
                         //foreach (int num in listToAdd) {
                         //    test += num + ",";
