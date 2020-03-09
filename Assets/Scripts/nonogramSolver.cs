@@ -12,62 +12,9 @@ public class nonogramSolver : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input.txt");
 
-        bool rows = true;
-        foreach (string line in lines) {
-            if (!skip) {
-                skip = true;
-                string[] words = line.Split(',');
-                this.lenght = int.Parse(words[0].Trim());
-                this.height = int.Parse(words[1].Trim());
-            } else {
-                if (!line.Contains("FILAS")) {
-                    if (line.Contains("COLUMNAS")) {
-                        rows = false;
-                    } else {
-                        string[] words = line.Split(',');
-
-                        List<int> listToAdd = new List<int>();
-                        listToAdd.Add(0); //Initial Zero for completenes of row.
-                        foreach (string number in words) {
-                            listToAdd.Add(int.Parse(number.Trim()));
-                            //Debug.Log(int.Parse(number.Trim()));
-                        }
-
-                        //string test = "[";
-                        //foreach (int num in listToAdd) {
-                        //    test += num + ",";
-                        //}
-                        //test += "]";
-
-                        //Debug.Log(test);
-
-
-                        if (rows) {
-                            X.Add(listToAdd);
-                        } else {
-                            Y.Add(listToAdd);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i<this.height; i++) {
-            List<int> row = new List<int>();
-            for (int j = 0; i < this.lenght; j++) {
-                row.Add(0);
-            }
-            //string test = "[";
-            //foreach (int num in row) {
-            //    test += num + ",";
-            //}
-            //test += "]";
-
-            //Debug.Log(test);
-            baseNonogram.Add(row);
-        }
+        createCluesMatrix();
+        createLogicalMatrix();
 
     }
 
@@ -75,4 +22,73 @@ public class nonogramSolver : MonoBehaviour {
     void Update() {
 
     }
+
+    void createLogicalMatrix() {
+
+        for (int i = 0; i < this.height; i++) {
+            List<int> row = new List<int>();
+            for (int j = 0; i < this.lenght; j++) {
+                row.Add(0);
+            }
+            string test = "[";
+            foreach (int num in row) {
+                test += num + ",";
+            }
+            test += "]";
+
+            Debug.Log(test);
+            baseNonogram.Add(row);
+        }
+
+    }
+
+    void createCluesMatrix() {
+        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input.txt");
+        bool rows = true;
+        foreach (string line in lines) {
+            if (!skip) {
+                skip = true;
+                string[] words = line.Split(',');
+                this.lenght = int.Parse(words[0].Trim());
+                this.height = int.Parse(words[1].Trim());
+            }
+            else {
+                if (!line.Contains("FILAS")) {
+                    if (line.Contains("COLUMNAS")) {
+                        rows = false;
+                    }
+                    else {
+                        string[] words = line.Split(',');
+
+                        List<int> listToAdd = new List<int>();
+                        listToAdd.Add(0); //Initial Zero for completenes of row.
+                        foreach (string number in words) {
+                            listToAdd.Add(int.Parse(number.Trim()));
+                            Debug.Log(int.Parse(number.Trim()));
+                        }
+
+                        string test = "[";
+                        foreach (int num in listToAdd) {
+                            test += num + ",";
+                        }
+                        test += "]";
+
+                        Debug.Log(test);
+
+
+                        if (rows) {
+                            X.Add(listToAdd);
+                        }
+                        else {
+                            Y.Add(listToAdd);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+   
+
+
 }
