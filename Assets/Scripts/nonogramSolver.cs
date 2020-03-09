@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class nonogramSolver : MonoBehaviour {
     private int height;
-    private int lenght;
+    private int length;
     private List<List<int>> baseNonogram = new List<List<int>>();
     private List<List<int>> X = new List<List<int>>();
     private List<List<int>> Y = new List<List<int>>();
+    private List<int> columnEasyAccessList = new List<int>();
     private bool skip = false;
 
     public GameObject cell;
@@ -23,6 +24,12 @@ public class nonogramSolver : MonoBehaviour {
         //board.setWidth(this.lenght);
         Debug.Log(this.lenght);
         board.draw(cell);
+        markCell(0, 0, 2);
+        setColumnAccessList(5);
+        Debug.Log("MATRIX");
+        printMatrix(baseNonogram);
+        Debug.Log("MATRIX");
+        Debug.Log(isAnEmptyLine(columnEasyAccessList));
     }
 
     // Update is called once per frame
@@ -31,10 +38,9 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     void createLogicalMatrix() {
-        
         for (int i = 0; i < this.height; i++) {
             List<int> row = new List<int>();
-            for (int j = 0; j < this.lenght; j++) {
+            for (int j = 0; j < this.length; j++) {
                 row.Add(0);
             }
             baseNonogram.Add(row);
@@ -48,7 +54,7 @@ public class nonogramSolver : MonoBehaviour {
             if (!skip) {
                 skip = true;
                 string[] words = line.Split(',');
-                this.lenght = int.Parse(words[0].Trim());
+                this.length = int.Parse(words[0].Trim());
                 this.height = int.Parse(words[1].Trim());
             }
             else {
@@ -63,7 +69,7 @@ public class nonogramSolver : MonoBehaviour {
                         listToAdd.Add(0); //Initial Zero for completenes of row.
                         foreach (string number in words) {
                             listToAdd.Add(int.Parse(number.Trim()));
-                            //Debug.Log(int.Parse(number.Trim()));
+                           // Debug.Log(int.Parse(number.Trim()));
                         }
                         
                         //string test = "[";
@@ -87,13 +93,105 @@ public class nonogramSolver : MonoBehaviour {
         }
     }
 
+
+    void analyzeRowOrColumn(bool isRow, int index) {
+        List<int> lineBeingAnalyzed;
+        List<int> clues;
+        if (isRow) {
+            lineBeingAnalyzed = this.baseNonogram[index];
+            clues = getCluesByIndex(index, true);
+        } else {
+            setColumnAccessList(index);
+            lineBeingAnalyzed = columnEasyAccessList;
+            clues = getCluesByIndex(index, false);
+        }
+
+        if (isUpToSimpleBoxes(lineBeingAnalyzed, clues)) {
+            lineBeingAnalyzed = simpleBoxes();
+        }
+        
+    }
+
    
-    void simpleBoxes() {
-
-    }
-    void simpleSpaces() {
-
+    List<int> simpleBoxes() {
+        return new List<int> { 1, 1 };
     }
 
+    bool isUpToSimpleBoxes(List<int> lineBeingAnalyzed, List<int> clues) {
+        int sumOfClues = addListElements(lineBeingAnalyzed);
+        
+        int conditionSum = sumOfClues + getObligatorySpacesBetweenClues(clues);
+
+        if (conditionSum > (lineBeingAnalyzed.Count / 2) && isAnEmptyLine(lineBeingAnalyzed)) {
+            return true;
+        }
+        else return false;
+    }
+
+    int addListElements(List<int> list) {
+        return addListElements_aux(list, 0, 0);
+    }
+    int addListElements_aux(List<int> list, int index, int sum) {
+        if (index == list.Count) {
+            return sum;
+        }
+        else return addListElements_aux(list, index++, sum + list[index]);
+    }
+
+    int getObligatorySpacesBetweenClues(List<int> clues) {
+        return clues.Count - 1;
+    }
+
+    bool isAnEmptyLine(List<int> line) {
+        bool isEmpty = true;
+        foreach (int element in line) {
+            if (element != 0) isEmpty = false;
+        }
+        return isEmpty;
+    }
+
+    List<int> getCluesByIndex(int index, bool isRow) {
+     
+        if (isRow) {
+            return X[index];
+        }
+        else return Y[index];
+    
+    }
+
+    void markCell(int xIndex, int yIndex, int oneOrTwo) { //2 marks discarded, 1 marks confirmed
+        this.baseNonogram[xIndex][yIndex] = oneOrTwo;
+    }
+
+    void setColumnAccessList(int collumnIndex) { //Sets the values of the column access list with the given collumn index
+        foreach (List<int> row in this.baseNonogram) {
+            for (int cellIndex = 0; cellIndex < this.length; cellIndex++) {
+                if (cellIndex == collumnIndex) {
+                    this.columnEasyAccessList.Add(row[cellIndex]);
+                }
+            }
+        }
+        printList(columnEasyAccessList);
+    }
+
+    void printMatrix(List<List<int>> matrix) {
+        foreach (List<int> row in matrix) {
+            string test = "[";
+            foreach (int cell in row) {
+                test += cell + ",";
+            }
+            test += "]";
+            Debug.Log(test);
+        }
+    }
+    
+    void printList(List<int> list) {
+        string test = "[";
+        foreach (int cell in list) {
+            test += cell + ",";
+        }
+        test += "]";
+        Debug.Log(test);
+    }
 
 }
