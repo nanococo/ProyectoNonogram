@@ -25,21 +25,16 @@ public class nonogramSolver : MonoBehaviour {
 
     void createLogicalMatrix() {
 
-        for (int i = 0; i < this.height; i++) {
-            List<int> row = new List<int>();
-            for (int j = 0; i < this.lenght; j++) {
+        Debug.Log(this.height);
+        Debug.Log(this.lenght);
+
+        List<int> row = new List<int>(); ;
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < 1; j++) {
                 row.Add(0);
             }
-            string test = "[";
-            foreach (int num in row) {
-                test += num + ",";
-            }
-            test += "]";
-
-            Debug.Log(test);
             baseNonogram.Add(row);
         }
-
     }
 
     void createCluesMatrix() {
@@ -64,16 +59,16 @@ public class nonogramSolver : MonoBehaviour {
                         listToAdd.Add(0); //Initial Zero for completenes of row.
                         foreach (string number in words) {
                             listToAdd.Add(int.Parse(number.Trim()));
-                            Debug.Log(int.Parse(number.Trim()));
+                            //Debug.Log(int.Parse(number.Trim()));
                         }
 
-                        string test = "[";
-                        foreach (int num in listToAdd) {
-                            test += num + ",";
-                        }
-                        test += "]";
+                        //string test = "[";
+                        //foreach (int num in listToAdd) {
+                        //    test += num + ",";
+                        //}
+                        //test += "]";
 
-                        Debug.Log(test);
+                        //Debug.Log(test);
 
 
                         if (rows) {
