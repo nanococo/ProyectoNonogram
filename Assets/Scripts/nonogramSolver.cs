@@ -8,22 +8,19 @@ public class nonogramSolver : MonoBehaviour {
     private List<List<int>> baseNonogram = new List<List<int>>();
     private List<List<int>> X = new List<List<int>>();
     private List<List<int>> Y = new List<List<int>>();
-    private List<int> columnEasyAccessList = new List<int>();
+    private List<int> collumnAccessList = new List<int>();
     private bool skip = false;
-
-    public GameObject cell;
-
 
     // Start is called before the first frame update
     void Start() {
+
         createCluesMatrix();
         createLogicalMatrix();
-
 
         Board board = Board.MakeFooObject(this.height, this.length);
 
         Debug.Log(this.length);
-        board.draw(cell);
+        //board.draw(cell);
         solvePuzzle();
         Debug.Log("X-CLUES");
         printMatrix(X);
@@ -36,12 +33,7 @@ public class nonogramSolver : MonoBehaviour {
         Debug.Log("MATRIX");
         printMatrix(baseNonogram);
         Debug.Log("MATRIX");
-        // Debug.Log("Min and max cases");
-        // printList(getMinCase(Y[5],baseNonogram[0].Count));
-        // printList(getMaxCase(Y[5],baseNonogram[0].Count));
-        // Debug.Log("Result");
-        // printList(simpleBoxes(baseNonogram[0], Y[5]));
-
+        
     }
 
     // Update is called once per frame
@@ -50,15 +42,16 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     void createLogicalMatrix() {
+
         for (int i = 0; i < this.height; i++) {
             List<int> row = new List<int>();
             for (int j = 0; j < this.length; j++) {
-
                 row.Add(9);
-
             }
+
             baseNonogram.Add(row);
         }
+
     }
 
     void createCluesMatrix() {
@@ -83,10 +76,8 @@ public class nonogramSolver : MonoBehaviour {
                         //listToAdd.Add(0); //Initial Zero for completenes of row.
                         foreach (string number in words) {
                             listToAdd.Add(int.Parse(number.Trim()));
-
                         }
                         
-
                         if (rows) {
                             X.Add(listToAdd);
                         }
@@ -125,18 +116,16 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     void analyzeLine(bool isRow, int index) {
-
         List<int> lineBeingAnalyzed;
         List<int> clues;
         if (isRow) {
             lineBeingAnalyzed = this.baseNonogram[index];
             clues = getCluesByIndex(index, true);
-
+            
         } else {
             setColumnAccessList(index);
-            lineBeingAnalyzed = columnEasyAccessList;
+            lineBeingAnalyzed = collumnAccessList;
             clues = getCluesByIndex(index, false);
-
 
         }
 
@@ -210,11 +199,7 @@ public class nonogramSolver : MonoBehaviour {
 
        return maxCase;
 
-
-    void markCell(int xIndex, int yIndex, int oneOrTwo) { //2 marks discarded, 1 marks confirmed
-        this.baseNonogram[xIndex][yIndex] = oneOrTwo;
     }
-
 
     List<int> getMinClueDistribution(List<int> clues, int lineSize){
         
@@ -295,16 +280,14 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     void setColumnAccessList(int collumnIndex) { //Sets the values of the column access list with the given collumn index
-        this.columnEasyAccessList.Clear();
-
+        this.collumnAccessList.Clear();
         foreach (List<int> row in this.baseNonogram) {
             for (int cellIndex = 0; cellIndex < this.length; cellIndex++) {
                 if (cellIndex == collumnIndex) {
-                    this.columnEasyAccessList.Add(row[cellIndex]);
+                    this.collumnAccessList.Add(row[cellIndex]);
                 }
             }
         }
-
         
     }
 
@@ -330,7 +313,6 @@ public class nonogramSolver : MonoBehaviour {
         if (list.Count % 2 == 0){
             return true;
         } else return false;
-
     }
 
     void printMatrix(List<List<int>> matrix) {
