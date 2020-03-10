@@ -51,7 +51,9 @@ public class nonogramSolver : MonoBehaviour {
         for (int i = 0; i < this.height; i++) {
             List<int> row = new List<int>();
             for (int j = 0; j < this.length; j++) {
+
                 row.Add(9);
+
             }
             baseNonogram.Add(row);
         }
@@ -79,8 +81,10 @@ public class nonogramSolver : MonoBehaviour {
                         //listToAdd.Add(0); //Initial Zero for completenes of row.
                         foreach (string number in words) {
                             listToAdd.Add(int.Parse(number.Trim()));
+
                         }
                         
+
                         if (rows) {
                             X.Add(listToAdd);
                         }
@@ -124,7 +128,6 @@ public class nonogramSolver : MonoBehaviour {
         if (isRow) {
             lineBeingAnalyzed = this.baseNonogram[index];
             clues = getCluesByIndex(index, true);
-            
         } else {
             setColumnAccessList(index);
             lineBeingAnalyzed = columnEasyAccessList;
