@@ -118,6 +118,7 @@ public class nonogramSolver : MonoBehaviour {
     
     void goThroughCollumns(){
 
+        for(int index = 0; index < length; index++){
             analyzeLine(false, index);
         }
     
