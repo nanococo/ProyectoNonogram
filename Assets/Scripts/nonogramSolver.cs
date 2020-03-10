@@ -199,6 +199,7 @@ public class nonogramSolver : MonoBehaviour {
         }
 
        return maxCase;
+    }
 
 
     void markCell(int xIndex, int yIndex, int oneOrTwo) { //2 marks discarded, 1 marks confirmed
@@ -279,11 +280,6 @@ public class nonogramSolver : MonoBehaviour {
     
     }
     
-
-    void markCell(int xIndex, int yIndex, int oneOrZero) { //0 marks discarded, 1 marks confirmed
-        this.baseNonogram[xIndex][yIndex] = oneOrZero;
-    }
-
     void setColumnAccessList(int collumnIndex) { //Sets the values of the column access list with the given collumn index
 
         this.collumnAccessList.Clear();
@@ -341,5 +337,4 @@ public class nonogramSolver : MonoBehaviour {
         test += "]";
         Debug.Log(test);
     }
-
 }
