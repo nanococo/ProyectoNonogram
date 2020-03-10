@@ -10,6 +10,7 @@ public class nonogramSolver : MonoBehaviour {
     private List<List<int>> Y = new List<List<int>>();
     private List<int> collumnAccessList = new List<int>();
     private bool skip = false;
+    public GameObject cell;
 
     // Start is called before the first frame update
     void Start() {
@@ -20,16 +21,16 @@ public class nonogramSolver : MonoBehaviour {
         Board board = Board.MakeFooObject(this.height, this.length);
 
         Debug.Log(this.length);
-        //board.draw(cell);
+        board.draw(cell);
         solvePuzzle();
         Debug.Log("X-CLUES");
         printMatrix(X);
         Debug.Log("X-CLUES");
-        Debug.Log("%%%%%%%%%%%%%%%%%%%%%%%%%");
+        Debug.Log("-----------------------------------------------");
         Debug.Log("Y-CLUES");
         printMatrix(Y);
         Debug.Log("Y-CLUES");
-        Debug.Log("%%%%%%%%%%%%%%%%%%%%%%%%%");
+        Debug.Log("-----------------------------------------------");
         Debug.Log("MATRIX");
         printMatrix(baseNonogram);
         Debug.Log("MATRIX");
