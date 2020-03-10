@@ -33,6 +33,7 @@ public class nonogramSolver : MonoBehaviour {
         Debug.Log("MATRIX");
         printMatrix(baseNonogram);
         Debug.Log("MATRIX");
+
         
     }
 
@@ -121,7 +122,7 @@ public class nonogramSolver : MonoBehaviour {
         if (isRow) {
             lineBeingAnalyzed = this.baseNonogram[index];
             clues = getCluesByIndex(index, true);
-            
+
         } else {
             setColumnAccessList(index);
             lineBeingAnalyzed = collumnAccessList;
@@ -198,6 +199,10 @@ public class nonogramSolver : MonoBehaviour {
         }
 
        return maxCase;
+
+
+    void markCell(int xIndex, int yIndex, int oneOrTwo) { //2 marks discarded, 1 marks confirmed
+        this.baseNonogram[xIndex][yIndex] = oneOrTwo;
 
     }
 
@@ -280,7 +285,9 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     void setColumnAccessList(int collumnIndex) { //Sets the values of the column access list with the given collumn index
+
         this.collumnAccessList.Clear();
+
         foreach (List<int> row in this.baseNonogram) {
             for (int cellIndex = 0; cellIndex < this.length; cellIndex++) {
                 if (cellIndex == collumnIndex) {
