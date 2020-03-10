@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 277411646}
   - component: {fileID: 277411645}
   m_Layer: 0
-  m_Name: New Sprite
+  m_Name: Solver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2351a073b9909b540800e441f93a3615, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cell: {fileID: 627841863419960914, guid: d23a63d6328f9e649beb45c57ba9e9c6, type: 3}
 --- !u!212 &277411646
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -268,7 +269,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
