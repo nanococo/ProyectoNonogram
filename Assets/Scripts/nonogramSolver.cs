@@ -12,28 +12,28 @@ public class nonogramSolver : MonoBehaviour {
     private bool skip = false;
     public GameObject cell;
 
+
+    public Matrix matrix;
+
     // Start is called before the first frame update
     void Start() {
 
         createCluesMatrix();
         createLogicalMatrix();
+        
+        matrix = new Matrix();
 
         Board board = Board.MakeFooObject(this.height, this.length);
 
         Debug.Log(this.length);
         board.draw(cell);
         solvePuzzle();
-        Debug.Log("X-CLUES");
-        printMatrix(X);
-        Debug.Log("X-CLUES");
-        Debug.Log("-----------------------------------------------");
-        Debug.Log("Y-CLUES");
-        printMatrix(Y);
-        Debug.Log("Y-CLUES");
-        Debug.Log("-----------------------------------------------");
-        Debug.Log("MATRIX");
-        printMatrix(baseNonogram);
-        Debug.Log("MATRIX");
+       
+        // Debug.Log("MATRIX");
+        // printMatrix(baseNonogram);
+        // Debug.Log("MATRIX");
+        
+        
 
         
     }
@@ -79,6 +79,7 @@ public class nonogramSolver : MonoBehaviour {
                         foreach (string number in words) {
                             listToAdd.Add(int.Parse(number.Trim()));
                         }
+ 
                         
                         if (rows) {
                             X.Add(listToAdd);
@@ -93,23 +94,45 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     void solvePuzzle(){
-        
-        Debug.Log("Rows");
-        goThroughRows();
-        Debug.Log("Collumns");
-        goThroughCollumns();
-       
 
+        bool hasToStartWithRows = startWithRows();
+
+        
+            Debug.Log("Rows");
+            goThroughRows();
+            Debug.Log("Collumns");
+            goThroughColumns();
+        
+        
+        
     }
 
-    void goThroughRows(){
+    private bool startWithRows(){ //NO
+        bool hasToStartWithRows = !(getGreaterSumOfRowsInAnIntArraw(Y) > getGreaterSumOfRowsInAnIntArraw(X));
+        return hasToStartWithRows;
+    }
+
+    private int getGreaterSumOfRowsInAnIntArraw(List<List<int>> array){ //NO
+        int greaterSum = 0;
+        int sum;
+        foreach (List<int> row in array){
+            sum = addListElements(row); 
+            if (sum > greaterSum){
+                greaterSum = sum;
+            }
+        }
+        return greaterSum;
+    }
+
+
+    private void goThroughRows(){ //NO
         for(int index = 0; index < height; index++){
             analyzeLine(true, index);
         }
     }
-    
-    
-    void goThroughCollumns(){
+
+
+    private void goThroughColumns(){ //NO
 
         for(int index = 0; index < length; index++){
             analyzeLine(false, index);
@@ -117,17 +140,17 @@ public class nonogramSolver : MonoBehaviour {
     
     }
 
-    void analyzeLine(bool isRow, int index) {
+    private void analyzeLine(bool isRow, int index) {
         List<int> lineBeingAnalyzed;
         List<int> clues;
         if (isRow) {
-            lineBeingAnalyzed = this.baseNonogram[index];
-            clues = getCluesByIndex(index, true);
+            lineBeingAnalyzed = this.baseNonogram[index]; //NO
+            clues = getCluesByIndex(index, true); //NO
 
         } else {
             setColumnAccessList(index);
-            lineBeingAnalyzed = collumnAccessList;
-            clues = getCluesByIndex(index, false);
+            lineBeingAnalyzed = collumnAccessList; //NO
+            clues = getCluesByIndex(index, false); //NO
 
         }
 
@@ -139,7 +162,10 @@ public class nonogramSolver : MonoBehaviour {
         
     }
 
-    void copyResultIntoNonogram(bool isRow, int index, List<int> lineProcessed){
+
+    
+
+    private void copyResultIntoNonogram(bool isRow, int index, List<int> lineProcessed){
 
         if(isRow){
 
@@ -147,13 +173,13 @@ public class nonogramSolver : MonoBehaviour {
 
         } else{
 
-            copyResultIntoCollumn(index, lineProcessed);
+            copyResultIntoColumn(index, lineProcessed);
 
         }
 
     }
 
-    void copyResultIntoCollumn(int index, List<int> lineProcessed){
+    private void copyResultIntoColumn(int index, List<int> lineProcessed){
         
         for(int nonogramIndex = 0; nonogramIndex < baseNonogram.Count; nonogramIndex++){
             baseNonogram[nonogramIndex][index] = lineProcessed[nonogramIndex];
@@ -161,8 +187,8 @@ public class nonogramSolver : MonoBehaviour {
 
     }
 
-   
-    List<int> simpleBoxes(List<int> lineBeingAnalyzed, List<int> clues) {
+
+    private List<int> simpleBoxes(List<int> lineBeingAnalyzed, List<int> clues) {
 
         int lineSize = lineBeingAnalyzed.Count;
 
@@ -174,10 +200,11 @@ public class nonogramSolver : MonoBehaviour {
         return simpleBoxesResult;
     
     }
+    
+    
 
 
-
-    List<int> getMinCase(List<int> clues, int lineSize) {
+    private List<int> getMinCase(List<int> clues, int lineSize) {
 
         List<int> minCase = getMinClueDistribution(clues, lineSize);
 
@@ -188,27 +215,22 @@ public class nonogramSolver : MonoBehaviour {
     
     }
 
-    List<int> getMaxCase(List<int> clues, int lineSize) {
+    private List<int> getMaxCase(List<int> clues, int lineSize) {
 
         List<int> maxCase = getMinClueDistribution(clues, lineSize);
-        int maxSapcesBeforeClues = getMaxSpacesBeforeClues(clues, lineSize);
 
-        
+
         while(maxCase.Count < lineSize){
             maxCase.Insert(0,9);
-            maxSapcesBeforeClues--;
         }
 
-       return maxCase;
+        return maxCase;
     }
 
 
-    void markCell(int xIndex, int yIndex, int oneOrTwo) { //2 marks discarded, 1 marks confirmed
-        this.baseNonogram[xIndex][yIndex] = oneOrTwo;
 
-    }
 
-    List<int> getMinClueDistribution(List<int> clues, int lineSize){
+    private List<int> getMinClueDistribution(List<int> clues, int lineSize){
         
         List<int> minClueDistribution = new List<int> {};
         int cluesQuantity = clues.Count;
@@ -228,7 +250,7 @@ public class nonogramSolver : MonoBehaviour {
 
     }
 
-    bool isUpToSimpleBoxes(List<int> lineBeingAnalyzed, List<int> clues) {
+    private bool isUpToSimpleBoxes(List<int> lineBeingAnalyzed, List<int> clues) {
         
         int sumOfClues = addListElements(clues);
         if (sumOfClues > (lineBeingAnalyzed.Count / 2) && isAnEmptyLine(lineBeingAnalyzed)) { 
@@ -237,18 +259,66 @@ public class nonogramSolver : MonoBehaviour {
         else return false;
     
     }
-
-    int getMaxSpacesBeforeClues(List<int> clues, int listSize){
-
-        int sumOfClues = addListElements(clues);
-        int conditionSum = sumOfClues + getObligatorySpacesBetweenClues(clues);
-        int maxSapcesBeforeClues = listSize - conditionSum;
+    
+    
+    private bool isUpToSimpleSpaces(List<int> line, List<int> clues)
+    {
         
-        return maxSapcesBeforeClues;
+        return true;
+        
+    }
+
+    private void simpleSpaces(List<int> lineBeingAnalyzed, List<int> clues)
+    {
+        
+    }
+
+    private int getNextConfirmedIndex(List<int> line, int departureIndex)
+    {
+        int index = departureIndex;
+        while (line[index] != 1)
+        {
+            index++;
+        }
+        return index;
+    }
+
+    private int getMaxSpread(int clue, int clueCompleteness)
+    {
+
+        return clue - clueCompleteness;
 
     }
 
-    int addListElements(List<int> list) {
+    private int getNumberOfConfirmedInARow(int beginIndex, List<int> line)
+    {
+        int confirmedInARow = 0;
+        while (line[beginIndex] == 1 && beginIndex < line.Count)
+        {
+            confirmedInARow++;
+            beginIndex++;
+        }
+
+        return confirmedInARow;
+    }
+
+
+    private int distanceToBorder(bool isRightBorder, int lineSize, int index)
+    {
+        int distance;
+        if (isRightBorder)
+        {
+            distance = lineSize - (index + 1);
+        }
+        else
+        {
+            distance = index;
+        }
+        
+        return distance;
+    }
+
+    static int addListElements(List<int> list) {
         int sum = 0;        
         foreach (int element in list){
             sum += element;
@@ -257,14 +327,12 @@ public class nonogramSolver : MonoBehaviour {
     }
 
 
-
-
-    int getObligatorySpacesBetweenClues(List<int> clues) {
+    static int getObligatorySpacesBetweenClues(List<int> clues) {
         return clues.Count - 1; 
     }
 
 
-    bool isAnEmptyLine(List<int> line) {
+    static bool isAnEmptyLine(List<int> line) {
         bool isEmpty = true;
         foreach (int element in line) {
             if (element != 9) isEmpty = false;
@@ -272,7 +340,7 @@ public class nonogramSolver : MonoBehaviour {
         return isEmpty;
     }
 
-    List<int> getCluesByIndex(int index, bool isRow) {
+    private List<int> getCluesByIndex(int index, bool isRow) {
      
         if (isRow) {
             return X[index];
@@ -280,8 +348,8 @@ public class nonogramSolver : MonoBehaviour {
         else return Y[index];
     
     }
-    
-    void setColumnAccessList(int collumnIndex) { //Sets the values of the column access list with the given collumn index
+
+    private void setColumnAccessList(int collumnIndex) { //Sets the values of the column access list with the given collumn index
 
         this.collumnAccessList.Clear();
 
@@ -295,7 +363,7 @@ public class nonogramSolver : MonoBehaviour {
         
     }
 
-    List<int> commonConfirmedCellsBetweenLines(List<int> lineA, List<int> lineB){ //Lines the same size
+    static List<int> commonConfirmedCellsBetweenLines(List<int> lineA, List<int> lineB){ //Lines the same size
 
        List<int> commonConfirmedCells = new List<int> {};
 
@@ -313,13 +381,17 @@ public class nonogramSolver : MonoBehaviour {
        
     }
 
-    bool isEvenSize(List<int> list){
+    private bool isEvenSize(List<int> list){
         if (list.Count % 2 == 0){
             return true;
         } else return false;
     }
+    
+    private void discardCell(int xIndex, int yIndex) {
+        this.baseNonogram[xIndex][yIndex] = 0;
+    }
 
-    void printMatrix(List<List<int>> matrix) {
+    private void printMatrix(List<List<int>> matrix) {
         foreach (List<int> row in matrix) {
             string test = "[";
             foreach (int cell in row) {
@@ -329,8 +401,8 @@ public class nonogramSolver : MonoBehaviour {
             Debug.Log(test);
         }
     }
-    
-    void printList(List<int> list) {
+
+    private static void printList(List<int> list) {
         string test = "[";
         foreach (int cell in list) {
             test += cell + ",";
