@@ -148,6 +148,7 @@ public class Matrix
         goThroughColumns();
     }
     
+    
 
     private void goThroughRows()
     {

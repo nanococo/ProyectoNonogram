@@ -20,7 +20,7 @@ public class Column : Line
     }
 
     
-    protected override void createClues()
+    public override void createClues()
     {
         
         for (int index = 0; index < Length; index++)

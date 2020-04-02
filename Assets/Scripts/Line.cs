@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -47,14 +48,29 @@ public abstract class Line : MonoBehaviour
     
     public void analyzeLine() {
         
-        if (_simpleBoxesMethod.canDo(this))
-        {
-            Cells = _simpleBoxesMethod.simpleBoxes(this);
-        }
-        createClues();
+        //if (_simpleBoxesMethod.canDo(this))
+        //{
+        //    Cells = _simpleBoxesMethod.simpleBoxes(this);
+        //}
+        //createClues();
+        //try
+        //{
+        //}
+        //catch (Exception e)
+        //{
+            // ignored
+        //}
+        
+        MathematicalApproach.mathematicalApproachMethod(ClueValues,
+                                                        1,
+                                                        4,
+                                                        0, 
+                                                        ClueValues.Count-1,
+                                                        this);
+
     }
 
-    protected abstract void createClues();
+    public abstract void createClues();
     protected abstract void assignCluesToCells();
 
     protected int createClue(int index)

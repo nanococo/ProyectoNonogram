@@ -11,7 +11,7 @@ public class Tests // : MonoBehaviour
   public Tests()
   {
     Debug.Log(testRow.calcSumToRight(2, 1));
-    Debug.Log(testRow.calcSumToLeft(2, 1));
+    Debug.Log(testRow.calcSumToLeft(2 , 1));
   }
   
 }

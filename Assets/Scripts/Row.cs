@@ -21,7 +21,7 @@ public class Row : Line
     }
 
 
-    protected override void createClues()
+    public override void createClues()
     {
         for (int index = 0; index < Length; index++)
         {

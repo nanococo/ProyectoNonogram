@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\GitHub_Projects\ProyectoNonogram" t="IncludeRecursive">
+    <e p="C:\Users\jguty\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\jguty\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_ProyectoNonogram.-2076553951.00" t="ExcludeRecursive" />
+    <e p="C:\Users\jguty\OneDrive\Documents\GitHub\ProyectoNonogram" t="IncludeRecursive">
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="Board.cs" t="Include" />
+          <e p="Cell.cs" t="Include" />
+          <e p="Clue.cs" t="Include" />
+          <e p="Column.cs" t="Include" />
           <e p="input.txt" t="Include" />
+          <e p="Line.cs" t="Include" />
+          <e p="MathematicalApproach.cs" t="Include" />
+          <e p="Matrix.cs" t="Include" />
           <e p="nonogramSolver.cs" t="Include" />
+          <e p="Row.cs" t="Include" />
+          <e p="SimpleBoxes.cs" t="Include" />
+          <e p="TESTS.cs" t="Include" />
         </e>
       </e>
       <e p="obj" t="ExcludeRecursive" />
@@ -15,7 +26,5 @@
       <e p="ProyectoNonogram.sln" t="IncludeFlat" />
       <e p="Temp\bin" t="ExcludeRecursive" />
     </e>
-    <e p="C:\Users\sebas\.Rider2019.3\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\sebas\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_ProyectoNonogram.824971147.00" t="ExcludeRecursive" />
   </component>
 </project>
