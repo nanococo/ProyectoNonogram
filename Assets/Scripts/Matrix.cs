@@ -146,6 +146,7 @@ public class Matrix
         goThroughRows();
         Debug.Log("Columns");
         goThroughColumns();
+        
     }
     
     
@@ -174,6 +175,7 @@ public class Matrix
         foreach (var column in _columns)
         {
             column.refresh(row);
+            if (column.isComplete()) column.discardLeftSpaces();
         }
     }
     private void updateRows(Line column)
@@ -181,6 +183,7 @@ public class Matrix
         foreach (var row in _rows)
         {
             row.refresh(column);
+            if (row.isComplete()) row.discardLeftSpaces();
         }
     }
     

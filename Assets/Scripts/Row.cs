@@ -20,7 +20,7 @@ public class Row : Line
         }
     }
 
-
+    /*
     public override void createClues()
     {
         for (int index = 0; index < Length; index++)
@@ -36,6 +36,6 @@ public class Row : Line
     {
         
     }
-    
+    */
 
 }

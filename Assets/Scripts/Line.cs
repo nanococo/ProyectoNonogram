@@ -6,12 +6,14 @@ using UnityEngine;
 public abstract class Line : MonoBehaviour
 {
     protected List<Cell> Cells;
-    protected List<Clue> _clues;
+    //protected List<Clue> _clues;
     public List<int> ClueValues;
     protected readonly int _index;
     private readonly SimpleBoxes _simpleBoxesMethod;
     public readonly int Length;
     public int sumOfClues;
+
+    private int greaterClueValue;
     
 
     public Line(List<int> clues, int length, int index)
@@ -19,10 +21,11 @@ public abstract class Line : MonoBehaviour
         ClueValues = clues;
         Length = length;
         _index = index;
-        _clues = new List<Clue>();
+        //_clues = new List<Clue>();
         _simpleBoxesMethod = new SimpleBoxes();
         createCellList();
         sumCluesValues();
+        setGreaterClue();
     }
 
     private void sumCluesValues()
@@ -47,55 +50,116 @@ public abstract class Line : MonoBehaviour
     
     
     public void analyzeLine() {
-        
-        //if (_simpleBoxesMethod.canDo(this))
-        //{
-        //    Cells = _simpleBoxesMethod.simpleBoxes(this);
-        //}
-        //createClues();
-        //try
-        //{
-        //}
-        //catch (Exception e)
-        //{
-            // ignored
-        //}
-        
-        MathematicalApproach.mathematicalApproachMethod(ClueValues,
-                                                        1,
-                                                        4,
+
+        Cells = MathematicalApproach.mathematicalApproachMethod(ClueValues,
+                                                        0,
+                                                        5,
                                                         0, 
                                                         ClueValues.Count-1,
                                                         this);
-
+        
     }
 
+    public bool isComplete()
+    {
+        bool lineComplete = true;
+        int index = 0;
+        foreach (int clue in ClueValues)
+        {
+            index = getNextConfirmedBlockIndex(index);
+            if (index == -1 )
+            {
+                lineComplete = false;
+                break;
+            }
+            if (countConfirmedBlockSize(index) != clue)
+            {
+                
+                lineComplete = false;
+                break;
+            }
+            index += countConfirmedBlockSize(index);
+        }
+
+        return lineComplete;
+    }
+
+    public int countConfirmedBlockSize(int pBlockIndex)
+    {
+        int confirmedBlockSize = 0;
+        
+        while (Cells[pBlockIndex].IsConfirmed)
+        {
+            confirmedBlockSize++;
+            if (pBlockIndex == Length - 1) break;
+            pBlockIndex++;
+        }
+        
+        return confirmedBlockSize;
+    }
+
+    public int getNextConfirmedBlockIndex(int pCurrentIndex)
+    {
+        while (!Cells[pCurrentIndex].IsConfirmed)
+        {
+            if (pCurrentIndex == Length - 1) return -1;
+            pCurrentIndex++;
+        }
+        
+        int nextConfirmedBlockIndex = pCurrentIndex;
+        
+        return nextConfirmedBlockIndex;
+    }
+
+    public void discardLeftSpaces()
+    {
+        foreach (Cell cell in Cells)
+        {
+            if (!cell.IsConfirmed) cell.discard();
+        }
+    }
+
+    public void discardCells()
+    {
+        
+    }
+
+    public void surroundCompletedClue()
+    {
+
+    }
+    
+    
+    
+    /*
     public abstract void createClues();
     protected abstract void assignCluesToCells();
 
+    
     protected int createClue(int index)
     {
         int minIndex = index;
         int maxIndex = index;
-        
+
         while (Cells[index].IsConfirmed)
         {
             maxIndex = index;
             index++;
             if (index == Length) break;
         }
-        
+
         Clue newClue = new Clue(minIndex, maxIndex, ClueValues);
         newClue.calcDistanceToRightBoundary(this);
         newClue.calcDistanceToLeftBoundary(this);
-        _clues.Add(newClue);
+        //_clues.Add(newClue);
         Debug.Log("NewClue: " +
                   "|BlockSize:" + newClue.BlockSize +
-                  "|minIndex:" + minIndex + 
+                  "|minIndex:" + minIndex +
                   "|maxIndex:" + maxIndex);
 
         return index;
     }
+    
 
     public int calcSumToRight(int index, int blockSize)
     {
@@ -141,7 +205,11 @@ public abstract class Line : MonoBehaviour
         int newIndex = index-1;
         return sumFromAnIndexWithSpacesBackwards_aux(newIndex, result + 1 + ClueValues[index]);
     }
-        
+        public List<Clue> getClues()
+    {
+        return _clues;
+    }
+    */
 
     public List<Cell> getCells()
     {
@@ -152,10 +220,25 @@ public abstract class Line : MonoBehaviour
     {
         Cells = newConfig;
     }
-    
-    public List<Clue> getClues()
+
+    public void setGreaterClue()
     {
-        return _clues;
+        greaterClueValue = findGreaterClue();
+    }
+
+    public int findGreaterClue()
+    {
+        return findGreaterClue_aux(0, ClueValues[0]);
+    }
+
+    public int findGreaterClue_aux(int index, int greaterClue)
+    {
+        if (index == Length - 1) return greaterClue;
+        
+        int newIndex = index + 1;
+        
+        if (ClueValues[index] > greaterClue) return findGreaterClue_aux(newIndex, ClueValues[index]);
+        return findGreaterClue_aux(newIndex, greaterClue);
     }
     
     public override string ToString() { //TODO

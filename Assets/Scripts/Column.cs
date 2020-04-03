@@ -20,6 +20,7 @@ public class Column : Line
     }
 
     
+    /*
     public override void createClues()
     {
         
@@ -39,5 +40,5 @@ public class Column : Line
     {
         
     }
-    
+    */
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public static class MathematicalApproach
 {
 
-    public static void mathematicalApproachMethod(List<int> pClueValues,
+    public static List<Cell> mathematicalApproachMethod(List<int> pClueValues,
                                                   int pListStartIndex,
                                                   int pListEndIndex,
                                                   int pClueStartIndex,
@@ -14,28 +14,31 @@ public static class MathematicalApproach
     {
         int size = pListEndIndex - pListStartIndex + 1;
         int clueSpannig = getCluesSpanning(pClueValues, pClueStartIndex, pClueEndIndex);
-
         int markDeterminator = size - clueSpannig;
-        
-        while (pClueStartIndex < pListEndIndex)
+
+        while (pClueStartIndex <= pClueEndIndex)
         {
+
             int quantity = pClueValues[pClueStartIndex] - markDeterminator;
             pListStartIndex += pClueValues[pClueStartIndex] - 1;
-            
-            backMarkCells(pListStartIndex, quantity, pLine);
-            
+            pLine = backMarkCells(pListStartIndex, quantity, pLine);
+
             pClueStartIndex++;
-            pListStartIndex++;
+            pListStartIndex += 2;
             
         }
 
+        return pLine.getCells();
     }
 
-    public static void backMarkCells(int pIndex, int pQuantity, Line pLine)
+    public static Line backMarkCells(int pIndex, int pQuantity, Line pLine)
     {
         int internalIndex = pIndex;
         int markedCells = 0;
+        //Debug.Log(pQuantity);
+        if (pQuantity < 0) pQuantity = 0;
         
+
         while (markedCells != pQuantity)
         {
             pLine.getCells()[internalIndex].confirm();
@@ -43,6 +46,8 @@ public static class MathematicalApproach
             
             internalIndex -= 1;
         }
+
+        return pLine;
     }
     
     private static int getCluesSpanning(List<int> pClueValues, int pClueStartIndex, int pListEndIndex)
