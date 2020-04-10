@@ -17,24 +17,20 @@ public class nonogramSolver : MonoBehaviour {
     void Start() {
 
         createCluesMatrix();
-        createLogicalMatrix();
+        createLogicalMatrixRepresentation();
         
-        matrix = new Matrix();
-
         Board board = Board.MakeFooObject(height, length);
         
         board.draw(cell);
-
-        // Debug.Log("MATRIX");
-        // printMatrix(baseNonogram);
-        // Debug.Log("MATRIX");
+        
+        matrix = new Matrix(baseNonogram, RowClues, ColumnClues, height, length);
     }
 
-    void createLogicalMatrix() {
+    private void createLogicalMatrixRepresentation() {
 
-        for (int i = 0; i < this.height; i++) {
+        for (int i = 0; i < height; i++) {
             List<int> row = new List<int>();
-            for (int j = 0; j < this.length; j++) {
+            for (int j = 0; j < length; j++) {
                 row.Add(9);
             }
 
@@ -43,8 +39,8 @@ public class nonogramSolver : MonoBehaviour {
 
     }
 
-    void createCluesMatrix() {
-        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input.txt");
+    private void createCluesMatrix() {
+        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input2.txt");
         bool rows = true;
         foreach (string line in lines) {
             if (!skip) {
@@ -62,11 +58,11 @@ public class nonogramSolver : MonoBehaviour {
                         string[] words = line.Split(',');
 
                         List<int> listToAdd = new List<int>();
-                        //listToAdd.Add(0); //Initial Zero for completenes of row.
-                        foreach (string number in words) {
+                        
+                        foreach (string number in words)
+                        {
                             listToAdd.Add(int.Parse(number.Trim()));
                         }
- 
                         
                         if (rows) {
                             RowClues.Add(listToAdd);
@@ -79,6 +75,7 @@ public class nonogramSolver : MonoBehaviour {
             }
         }
     }
+    
     private void printMatrix(List<List<int>> matrix) {
         foreach (List<int> row in matrix) {
             string test = "[";

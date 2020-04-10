@@ -1,62 +1,68 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public abstract class Line : MonoBehaviour
+public class Line
 {
+    protected int _index;
     protected List<Cell> Cells;
-    //protected List<Clue> _clues;
-    public List<int> ClueValues;
-    protected readonly int _index;
-    private readonly SimpleBoxes _simpleBoxesMethod;
-    public readonly int Length;
-    public int sumOfClues;
-
-    private int greaterClueValue;
     
+    public int Length;
+    public List<int> ClueValues;
+    
+    private int _greaterClueValue;
+    private List<int> SortedClueValues;
 
     public Line(List<int> clues, int length, int index)
     {
         ClueValues = clues;
+        
+        SortedClueValues = new List<int>();
+        SortedClueValues = ClueValues.ToList();
+        
         Length = length;
         _index = index;
-        //_clues = new List<Clue>();
-        _simpleBoxesMethod = new SimpleBoxes();
+        
         createCellList();
-        sumCluesValues();
+        
+        SortedClueValues = bubbleSort(SortedClueValues);
+      
         setGreaterClue();
+        
     }
 
-    private void sumCluesValues()
+    private void createCellList()
     {
-        foreach (var clue in ClueValues)
+        Cells = new List<Cell>();
+        for (int counter = 0; counter < Length; counter++)
         {
-            sumOfClues += clue;
+            Cell newCell = createCell(_index, counter);
+            Cells.Add(newCell);
         }
     }
 
-    protected abstract void createCellList();
-
-    protected Cell createCell(int xIndex, int yIndex)
+    private Cell createCell(int xIndex, int yIndex)
     {
         return new Cell(xIndex, yIndex);
     }
 
-    public void refresh(Line changes)
+    public void refresh(Line changes) 
     {
         Cells[changes._index].updateWithOuterChanges(changes.Cells[_index]);
     }
     
-    
-    public void analyzeLine() {
+    public void analyzeLine()
+    {
 
-        Cells = MathematicalApproach.mathematicalApproachMethod(ClueValues,
-                                                        0,
-                                                        5,
-                                                        0, 
-                                                        ClueValues.Count-1,
-                                                        this);
+        Cells = MathematicalApproach.mathematicalApproachMethod(
+             ClueValues,
+            0,
+            Length - 1,
+            0,
+            ClueValues.Count - 1,
+            this);
         
     }
 
@@ -72,13 +78,15 @@ public abstract class Line : MonoBehaviour
                 lineComplete = false;
                 break;
             }
-            if (countConfirmedBlockSize(index) != clue)
+
+            int size = countConfirmedBlockSize(index);
+            if (size != clue)
             {
                 
                 lineComplete = false;
                 break;
             }
-            index += countConfirmedBlockSize(index);
+            index += size;
         }
 
         return lineComplete;
@@ -100,6 +108,7 @@ public abstract class Line : MonoBehaviour
 
     public int getNextConfirmedBlockIndex(int pCurrentIndex)
     {
+        if (pCurrentIndex >= Length) return -1;
         while (!Cells[pCurrentIndex].IsConfirmed)
         {
             if (pCurrentIndex == Length - 1) return -1;
@@ -126,135 +135,92 @@ public abstract class Line : MonoBehaviour
 
     public void surroundCompletedClue()
     {
-
-    }
-    
-    
-    
-    /*
-    public abstract void createClues();
-    protected abstract void assignCluesToCells();
-
-    
-    protected int createClue(int index)
-    {
-        int minIndex = index;
-        int maxIndex = index;
-
-        while (Cells[index].IsConfirmed)
+        
+        int index = 0;
+        while (true)
         {
-            maxIndex = index;
-            index++;
-            if (index == Length) break;
+            index = getNextConfirmedBlockIndex(index);
+            if (index == -1) return;
+            int size = countConfirmedBlockSize(index);
+            if (size == _greaterClueValue)
+            {
+                
+                discardBlockBoundaries(index-1, size);
+                if (SortedClueValues.Count == 0) return;
+                SortedClueValues.RemoveAt(SortedClueValues.Count-1);
+                setGreaterClue();
+            }
+            index += size;
+
         }
+        
+        
+    }
 
-        Clue newClue = new Clue(minIndex, maxIndex, ClueValues);
-        newClue.calcDistanceToRightBoundary(this);
-        newClue.calcDistanceToLeftBoundary(this);
-        //_clues.Add(newClue);
-        Debug.Log("NewClue: " +
-                  "|BlockSize:" + newClue.BlockSize +
-                  "|minIndex:" + minIndex +
-                  "|maxIndex:" + maxIndex);
-
-        return index;
+    public void discardBlockBoundaries(int pIndex, int pSize)
+    {
+        if (pIndex < 0) return;
+        Cells[pIndex].discard();
+        pIndex += pSize + 1;
+        if (pIndex >= Length) return;
+        Cells[pIndex].discard();
     }
     
-
-    public int calcSumToRight(int index, int blockSize)
-    {
-        int sumOfRestOfValuesAndSpaces = sumFromAnIndexWithSpaces(index + 1);
-        int leftFromBlock = ClueValues[index] - blockSize;
-        return leftFromBlock + sumOfRestOfValuesAndSpaces;
-    }
-
-    public int calcSumToLeft(int index, int blockSize)
-    {
-        int sumOfRestOfValuesAndSpaces = sumFromAnIndexWithSpacesBackwards(index - 1);
-        int leftFromBlock = ClueValues[index] - blockSize;
-        return leftFromBlock + sumOfRestOfValuesAndSpaces;
-    }
-
-    private int sumFromAnIndexWithSpaces(int index)
-    {
-        return sumFromAnIndexWithSpaces_aux(index, 0);
-    }
-
-    private int sumFromAnIndexWithSpaces_aux(int index, int result) //TODO check if that +1 is right
-    {
-        if (index == ClueValues.Count)
-        {
-            return result;
-        }
-
-        int newIndex = index+1;
-        return sumFromAnIndexWithSpaces_aux(newIndex, result + 1 + ClueValues[index]);
-    }
-    
-    private int sumFromAnIndexWithSpacesBackwards(int index)
-    {
-        return sumFromAnIndexWithSpacesBackwards_aux(index, 0);
-    }
-    
-    private int sumFromAnIndexWithSpacesBackwards_aux(int index, int result) //TODO check if that +1 is right
-    {
-        if (index < 0)
-        {
-            return result;
-        }
-        int newIndex = index-1;
-        return sumFromAnIndexWithSpacesBackwards_aux(newIndex, result + 1 + ClueValues[index]);
-    }
-        public List<Clue> getClues()
-    {
-        return _clues;
-    }
-    */
-
     public List<Cell> getCells()
     {
         return Cells;
     }
 
-    public void setCells(List<Cell> newConfig)
-    {
-        Cells = newConfig;
-    }
-
     public void setGreaterClue()
     {
-        greaterClueValue = findGreaterClue();
-    }
-
-    public int findGreaterClue()
-    {
-        return findGreaterClue_aux(0, ClueValues[0]);
-    }
-
-    public int findGreaterClue_aux(int index, int greaterClue)
-    {
-        if (index == Length - 1) return greaterClue;
-        
-        int newIndex = index + 1;
-        
-        if (ClueValues[index] > greaterClue) return findGreaterClue_aux(newIndex, ClueValues[index]);
-        return findGreaterClue_aux(newIndex, greaterClue);
+        if (SortedClueValues.Count == 0) return;
+        _greaterClueValue = SortedClueValues[SortedClueValues.Count - 1];   
     }
     
-    public override string ToString() { //TODO
-        string test = "[";
-        foreach (var cell in Cells)
-        {
-            test += cell.Mark + ",";
-        }
-
-        test += "]";
-        return test;
-    }
-
-    public void setClues()
+    public List<int> bubbleSort(List<int> list)
     {
         
+        int temp;
+        List<int> internalList = list;
+
+        for (int j = 0; j <= internalList.Count - 2; j++)
+        {
+            for (int i = 0; i <= internalList.Count - 2; i++)
+            {
+                //Debug.Log(listToString(backupList));
+                if (internalList[i] > internalList[i + 1])
+                {
+                    temp = internalList[i + 1];
+                    internalList[i + 1] = internalList[i];
+                    internalList[i] = temp;
+                }
+            }
+        }
+        return internalList;
+
+    }
+    
+    public override string ToString() { 
+        string test = "|";
+        foreach (var cell in Cells)
+        {
+            test += cell.Mark + "|";
+        }
+        
+        return test;
+        
+    }
+    
+    public string listToString<T>(List<T> list)
+    {
+        string result = "";
+        foreach (var element in list)
+        {
+            result += element + ",";
+        }
+
+        result += "";
+        return result;
     }
 
 

@@ -9,16 +9,14 @@
         <e p="Scripts" t="Include">
           <e p="Board.cs" t="Include" />
           <e p="Cell.cs" t="Include" />
-          <e p="Clue.cs" t="Include" />
           <e p="Column.cs" t="Include" />
           <e p="input.txt" t="Include" />
+          <e p="input2.txt" t="Include" />
           <e p="Line.cs" t="Include" />
           <e p="MathematicalApproach.cs" t="Include" />
           <e p="Matrix.cs" t="Include" />
           <e p="nonogramSolver.cs" t="Include" />
           <e p="Row.cs" t="Include" />
-          <e p="SimpleBoxes.cs" t="Include" />
-          <e p="TESTS.cs" t="Include" />
         </e>
       </e>
       <e p="obj" t="ExcludeRecursive" />

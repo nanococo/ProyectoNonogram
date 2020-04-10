@@ -14,41 +14,37 @@ public class Matrix
 
     private List<Row> _rows;
     private List<Column> _columns;
+    
 
-    private bool skip = false;
-    public GameObject graphicCell;
-
-    public Matrix()
+    public Matrix(List<List<int>> pMatrixrepresentation, List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
     {
-        matrixRepresentation = new List<List<int>>();
-        
-        rowClues = new List<List<int>>();
-        columnClues = new List<List<int>>();
+        matrixRepresentation = pMatrixrepresentation;
+        rowClues = pRowClues;
+        columnClues = pColumnClues;
         
         _rows = new List<Row>();
         _columns = new List<Column>();
-        
-        createCluesMatrix();
-        createLogicalMatrixRepresentation();
+
+        height = pHeight;
+        length = pLength;
+
         createRows();
         createColumns();
         
         test();
 
         
-
     }
 
     public void test()
     {
-        Debug.Log("-----------------------------------------------");
-        Tests testClass = new Tests();
-        Debug.Log("-----------------------------------------------");
         Debug.Log("MATRIX");
         Debug.Log(printMatrix(matrixRepresentation));
         Debug.Log("MATRIX");
         Debug.Log("-----------------------------------------------");
+        
         solveMatrix();
+        
         Debug.Log("ROWS");
         Debug.Log(listToString(_rows));
         Debug.Log("ROWS");
@@ -59,58 +55,6 @@ public class Matrix
         
     }
     
-    
-    
-
-    private void createLogicalMatrixRepresentation() {
-
-        for (int i = 0; i < height; i++) {
-            List<int> row = new List<int>();
-            for (int j = 0; j < length; j++) {
-                row.Add(9);
-            }
-
-            matrixRepresentation.Add(row);
-        }
-
-    }
-
-    private void createCluesMatrix() {
-        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input.txt");
-        bool rows = true;
-        foreach (string line in lines) {
-            if (!skip) {
-                skip = true;
-                string[] words = line.Split(',');
-                length = int.Parse(words[0].Trim());
-                height = int.Parse(words[1].Trim());
-            }
-            else {
-                if (!line.Contains("FILAS")) {
-                    if (line.Contains("COLUMNAS")) {
-                        rows = false;
-                    }
-                    else {  
-                        string[] words = line.Split(',');
-
-                        List<int> listToAdd = new List<int>();
-                        
-                        foreach (string number in words)
-                        {
-                            listToAdd.Add(int.Parse(number.Trim()));
-                        }
-                        
-                        if (rows) {
-                            rowClues.Add(listToAdd);
-                        }
-                        else {
-                            columnClues.Add(listToAdd);
-                        }
-                    }
-                }
-            }
-        }
-    }
     
     private void createRows()
     {
@@ -149,8 +93,6 @@ public class Matrix
         
     }
     
-    
-
     private void goThroughRows()
     {
         foreach (var row in _rows)
@@ -175,7 +117,9 @@ public class Matrix
         foreach (var column in _columns)
         {
             column.refresh(row);
+            column.surroundCompletedClue();
             if (column.isComplete()) column.discardLeftSpaces();
+            
         }
     }
     private void updateRows(Line column)
@@ -183,6 +127,7 @@ public class Matrix
         foreach (var row in _rows)
         {
             row.refresh(column);
+            row.surroundCompletedClue();
             if (row.isComplete()) row.discardLeftSpaces();
         }
     }
@@ -193,7 +138,7 @@ public class Matrix
         string test = "";
         foreach (var list in matrix)
         {
-            test += listToString(list) + ",\n";
+            test += listToString(list) + "\n";
         }
         
         return test;

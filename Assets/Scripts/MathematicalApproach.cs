@@ -35,10 +35,9 @@ public static class MathematicalApproach
     {
         int internalIndex = pIndex;
         int markedCells = 0;
-        //Debug.Log(pQuantity);
+        
         if (pQuantity < 0) pQuantity = 0;
         
-
         while (markedCells != pQuantity)
         {
             pLine.getCells()[internalIndex].confirm();
