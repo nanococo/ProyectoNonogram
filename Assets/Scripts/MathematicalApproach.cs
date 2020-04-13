@@ -5,12 +5,8 @@ using UnityEngine;
 public static class MathematicalApproach
 {
 
-    public static List<Cell> mathematicalApproachMethod(List<int> pClueValues,
-                                                  int pListStartIndex,
-                                                  int pListEndIndex,
-                                                  int pClueStartIndex,
-                                                  int pClueEndIndex,
-                                                  Line pLine)
+    public static List<Cell> mathematicalApproachMethod(List<int> pClueValues, int pListStartIndex, int pListEndIndex,
+        int pClueStartIndex, int pClueEndIndex, Line pLine)
     {
         int size = pListEndIndex - pListStartIndex + 1;
         int clueSpannig = getCluesSpanning(pClueValues, pClueStartIndex, pClueEndIndex);
@@ -31,6 +27,8 @@ public static class MathematicalApproach
         return pLine.getCells();
     }
 
+    
+    //Backmarks the number of cells indicated in the 
     public static Line backMarkCells(int pIndex, int pQuantity, Line pLine)
     {
         int internalIndex = pIndex;
@@ -49,11 +47,12 @@ public static class MathematicalApproach
         return pLine;
     }
     
+    
+    //Recursive method that get the sum of the clue values inside the indexes and the spaces between them
     private static int getCluesSpanning(List<int> pClueValues, int pClueStartIndex, int pListEndIndex)
     {
         return getCluesSpanning_aux(pClueStartIndex, pListEndIndex, 0, pClueValues);
-    }
-
+    } 
     private static int getCluesSpanning_aux(int pIndex, int pEndIndex, int pSpanning, List<int> pClueValues)
     {
         if (pIndex == pEndIndex)

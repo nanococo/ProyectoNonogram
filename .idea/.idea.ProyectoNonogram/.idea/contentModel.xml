@@ -12,6 +12,9 @@
           <e p="Column.cs" t="Include" />
           <e p="input.txt" t="Include" />
           <e p="input2.txt" t="Include" />
+          <e p="input3.txt" t="Include" />
+          <e p="input4.txt" t="Include" />
+          <e p="input5.txt" t="Include" />
           <e p="Line.cs" t="Include" />
           <e p="MathematicalApproach.cs" t="Include" />
           <e p="Matrix.cs" t="Include" />

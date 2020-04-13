@@ -38,11 +38,6 @@ public class Matrix
 
     public void test()
     {
-        Debug.Log("MATRIX");
-        Debug.Log(printMatrix(matrixRepresentation));
-        Debug.Log("MATRIX");
-        Debug.Log("-----------------------------------------------");
-        
         solveMatrix();
         
         Debug.Log("ROWS");
@@ -72,7 +67,7 @@ public class Matrix
 
     private void createColumns()
     {
-        for (int index = 0; index < length; index++)
+        for (int index = 0; index < height; index++)
         {
             _columns.Add(createColumn(index));
         }
@@ -81,16 +76,30 @@ public class Matrix
 
     private Column createColumn(int index)
     {
+        Debug.Log(index);
         return new Column(columnClues[index], length, index);
     }
 
     private void solveMatrix()
     {
-        Debug.Log("Rows");
+        Debug.Log("Rows1");
         goThroughRows();
-        Debug.Log("Columns");
+        Debug.Log(listToString(_rows));
+        Debug.Log("Columns1");
         goThroughColumns();
-        
+        Debug.Log(listToString(_rows));
+        Debug.Log("Rows2");
+        goThroughRows();
+        Debug.Log(listToString(_rows));
+        Debug.Log("Columns2");
+        goThroughColumns();
+        Debug.Log(listToString(_rows));
+        Debug.Log("Rows3");
+        goThroughRows();
+        Debug.Log(listToString(_rows));
+        Debug.Log("Columns3");
+        goThroughColumns();
+        Debug.Log(listToString(_rows));
     }
     
     private void goThroughRows()
@@ -117,9 +126,6 @@ public class Matrix
         foreach (var column in _columns)
         {
             column.refresh(row);
-            column.surroundCompletedClue();
-            if (column.isComplete()) column.discardLeftSpaces();
-            
         }
     }
     private void updateRows(Line column)
@@ -127,8 +133,6 @@ public class Matrix
         foreach (var row in _rows)
         {
             row.refresh(column);
-            row.surroundCompletedClue();
-            if (row.isComplete()) row.discardLeftSpaces();
         }
     }
     

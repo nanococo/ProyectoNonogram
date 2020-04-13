@@ -13,21 +13,21 @@ public class Line
     public List<int> ClueValues;
     
     private int _greaterClueValue;
-    private List<int> SortedClueValues;
-
+    private List<int> _sortedClueValues;
+ 
     public Line(List<int> clues, int length, int index)
     {
         ClueValues = clues;
         
-        SortedClueValues = new List<int>();
-        SortedClueValues = ClueValues.ToList();
+        _sortedClueValues = new List<int>();
+        _sortedClueValues = ClueValues.ToList();
         
         Length = length;
         _index = index;
         
         createCellList();
         
-        SortedClueValues = bubbleSort(SortedClueValues);
+        _sortedClueValues = bubbleSort(_sortedClueValues);
       
         setGreaterClue();
         
@@ -55,17 +55,92 @@ public class Line
     
     public void analyzeLine()
     {
+        if (ClueValues[0] == 0) discardLeftSpaces();
+        else
+        {
+            //Debug.Log("INDEX: "+ _index);
+            discardCells();
+            markCells();
 
-        Cells = MathematicalApproach.mathematicalApproachMethod(
-             ClueValues,
-            0,
-            Length - 1,
-            0,
-            ClueValues.Count - 1,
-            this);
+        }
+        
+    }
+    
+    private void markCells()
+    {
+        int index = 0;
+        int finalIndex = Length - 1;
+        if (onlyExistOneSpace())
+        {
+            index = getNextIsolatedSpace(0);
+            int size = countIsolatedBlockSize(index);
+            finalIndex = index + size - 1;
+        }
+        Cells = MathematicalApproach.mathematicalApproachMethod(ClueValues, index, finalIndex, 
+            0, ClueValues.Count - 1, this);  
         
     }
 
+    private bool onlyExistOneSpace()
+    {
+        
+        int index = getNextIsolatedSpace(0);
+        int size = countIsolatedBlockSize(index);
+        index += size;
+        if (index < Length)
+        {
+            index = getNextIsolatedSpace(index);
+            if (index != -1) return false;
+        }
+        return true;
+    }
+
+    private void discardCells()
+    {
+        discardIsolatedSpaces();
+        surroundCompletedClue();
+        if (isComplete()) discardLeftSpaces();
+        if (ClueValues.Count == 1) discardUnreachableSpaces();
+    }
+    
+    private void discardUnreachableSpaces()
+    {
+        
+        int index = getNextConfirmedBlockIndex(0);
+        if (index != -1)
+        {
+            int blockSize = countConfirmedBlockSize(index);
+        
+            discardToLeft(index, blockSize);
+        
+            index += blockSize;
+        
+            discardToRight(index, blockSize);
+        }
+    }
+
+    private void discardIsolatedSpaces()
+    {
+        int index = 0;
+        int size;
+        while (index <= Length-1)
+        {
+            index = getNextIsolatedSpace(index);
+            if (index == -1) break;
+            
+            size = countIsolatedBlockSize(index);
+            
+            if (isAnEmptySpace(index))
+            {
+                if (_sortedClueValues.Count == 0) discardIsolatedSpace(index, size);
+                else if (size < _sortedClueValues[0]) discardIsolatedSpace(index, size);
+            }
+
+            index += size;
+        }
+    }
+    
+    
     public bool isComplete()
     {
         bool lineComplete = true;
@@ -91,8 +166,113 @@ public class Line
 
         return lineComplete;
     }
+    
+    //Auxiliary Methods
+    private void discardToLeft(int pIndex, int pBlockSize)
+    {
 
-    public int countConfirmedBlockSize(int pBlockIndex)
+        int maxReach = ClueValues[0] - pBlockSize;
+        pIndex -= maxReach;
+        pIndex--;
+
+        while (pIndex >= 0)
+        {
+            Cells[pIndex].discard();
+            pIndex--;
+        }
+
+    }
+    
+    private void discardToRight(int pIndex, int pBlockSize)
+    {
+        
+        int maxReach = ClueValues[ClueValues.Count-1] - pBlockSize;
+        pIndex += maxReach;
+
+        while (pIndex < Length )
+        {
+            Cells[pIndex].discard();
+            pIndex++;
+        }
+        
+    }
+
+    private int getNextIsolatedSpace(int pCurrentIndex)
+    {
+
+        int internalIndex = pCurrentIndex;
+        
+        while (Cells[internalIndex].IsDiscarded)
+        {
+            internalIndex++;
+            if (internalIndex == Length) return -1;
+        }
+
+        return internalIndex;
+        
+    }
+
+    private int countIsolatedBlockSize(int pBlockIndex)
+    {
+        
+        int size = 0;
+        int internalIndex = pBlockIndex;
+        
+        while (!Cells[internalIndex].IsDiscarded)
+        {
+            size++;
+            internalIndex++;
+            if (internalIndex == Length) return size;
+        }
+
+        return size;
+        
+    }
+  
+    private bool isAnEmptySpace(int pBlockIndex)
+    {
+        
+        int internalIndex = pBlockIndex;
+        while (!Cells[internalIndex].IsDiscarded)
+        {
+            if (Cells[internalIndex].IsConfirmed) return false;
+            internalIndex++;
+            if (internalIndex == Length) return true;
+        }
+
+        return true;
+        
+    }
+
+    private bool isCompleteSpace(int pBlockIndex)
+    {
+        
+        int internalIndex = pBlockIndex;
+        while (!Cells[internalIndex].IsDiscarded)
+        {
+            if (!Cells[internalIndex].IsConfirmed) return false;
+            internalIndex++;
+            if (internalIndex == Length) return true;
+        }
+
+        return true;
+        
+    }
+    
+    private void discardIsolatedSpace(int pBlockIndex, int pSize)
+    {
+
+        int finalIndex = pBlockIndex + pSize;
+        while (pBlockIndex < finalIndex)
+        {
+            Cells[pBlockIndex].discard();
+            pBlockIndex++;
+        }
+
+    }
+    
+    
+    private int countConfirmedBlockSize(int pBlockIndex)
     {
         int confirmedBlockSize = 0;
         
@@ -106,7 +286,7 @@ public class Line
         return confirmedBlockSize;
     }
 
-    public int getNextConfirmedBlockIndex(int pCurrentIndex)
+    private int getNextConfirmedBlockIndex(int pCurrentIndex)
     {
         if (pCurrentIndex >= Length) return -1;
         while (!Cells[pCurrentIndex].IsConfirmed)
@@ -120,7 +300,7 @@ public class Line
         return nextConfirmedBlockIndex;
     }
 
-    public void discardLeftSpaces()
+    private void discardLeftSpaces()
     {
         foreach (Cell cell in Cells)
         {
@@ -128,53 +308,65 @@ public class Line
         }
     }
 
-    public void discardCells()
+    private void surroundCompletedClue()
     {
-        
-    }
-
-    public void surroundCompletedClue()
-    {
-        
         int index = 0;
+        int size;
         while (true)
         {
             index = getNextConfirmedBlockIndex(index);
-            if (index == -1) return;
-            int size = countConfirmedBlockSize(index);
-            if (size == _greaterClueValue)
+            if(index == -1) break;
+            size = countConfirmedBlockSize(index);
+            if (size == _greaterClueValue && !isAlreadySurrounded(index-1, size))
             {
                 
                 discardBlockBoundaries(index-1, size);
-                if (SortedClueValues.Count == 0) return;
-                SortedClueValues.RemoveAt(SortedClueValues.Count-1);
+                _sortedClueValues.RemoveAt(_sortedClueValues.Count-1);
                 setGreaterClue();
             }
-            index += size;
 
+            index += size;
         }
-        
+      
+    }
+
+    private void discardBlockBoundaries(int pIndex, int pSize)
+    {
+        try
+        {
+            Cells[pIndex].discard();
+        }
+        catch (ArgumentOutOfRangeException outOfRangeException)
+        {}
+
+        try
+        {
+            pIndex += pSize + 1;
+            Cells[pIndex].discard(); 
+        } 
+        catch (ArgumentOutOfRangeException outOfRangeException)
+        {}
         
     }
 
-    public void discardBlockBoundaries(int pIndex, int pSize)
+    private bool isAlreadySurrounded(int pIndex, int pSize)
     {
-        if (pIndex < 0) return;
-        Cells[pIndex].discard();
-        pIndex += pSize + 1;
-        if (pIndex >= Length) return;
-        Cells[pIndex].discard();
+     
+        if (pIndex < 0 && pIndex + pSize + 1 >= Length) return true;
+        
+        if (pIndex < 0) return Cells[pIndex + pSize + 1].IsDiscarded;
+        
+        if (pIndex + pSize + 1 >= Length) return Cells[pIndex].IsDiscarded;
+        
+        else return Cells[pIndex].IsDiscarded && Cells[pIndex + pSize + 1].IsDiscarded;
+        
     }
     
-    public List<Cell> getCells()
-    {
-        return Cells;
-    }
-
+    
     public void setGreaterClue()
     {
-        if (SortedClueValues.Count == 0) return;
-        _greaterClueValue = SortedClueValues[SortedClueValues.Count - 1];   
+        if (_sortedClueValues.Count == 0) return;
+        _greaterClueValue = _sortedClueValues[_sortedClueValues.Count - 1];   
     }
     
     public List<int> bubbleSort(List<int> list)
@@ -198,6 +390,13 @@ public class Line
         }
         return internalList;
 
+    }
+    //Auxiliary Methods
+    
+    
+    public List<Cell> getCells()
+    {
+        return Cells;
     }
     
     public override string ToString() { 
