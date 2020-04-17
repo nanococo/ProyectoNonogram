@@ -38,7 +38,7 @@ public static class MathematicalApproach
         
         while (markedCells != pQuantity)
         {
-            pLine.getCells()[internalIndex].confirm();
+            pLine.markCell(internalIndex);
             markedCells += 1;
             
             internalIndex -= 1;

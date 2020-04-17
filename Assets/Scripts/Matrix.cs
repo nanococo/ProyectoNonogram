@@ -12,18 +12,23 @@ public class Matrix
     private List<List<int>> rowClues;
     private List<List<int>> columnClues;
 
-    private List<Row> _rows;
-    private List<Column> _columns;
+    private List<Line> _rows;
+    private List<Line> _columns;
+
+    private bool changeFlag;
     
 
     public Matrix(List<List<int>> pMatrixrepresentation, List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
     {
+
+        changeFlag = false;
+        
         matrixRepresentation = pMatrixrepresentation;
         rowClues = pRowClues;
         columnClues = pColumnClues;
         
-        _rows = new List<Row>();
-        _columns = new List<Column>();
+        _rows = new List<Line>();
+        _columns = new List<Line>();
 
         height = pHeight;
         length = pLength;
@@ -60,9 +65,9 @@ public class Matrix
         
     }
 
-    private Row createRow(int index)
+    private Line createRow(int index)
     {
-        return new Row(rowClues[index], height, index);
+        return new Line(rowClues[index], height, index);
     }
 
     private void createColumns()
@@ -74,32 +79,30 @@ public class Matrix
 
     }
 
-    private Column createColumn(int index)
+    private Line createColumn(int index)
     {
-        Debug.Log(index);
-        return new Column(columnClues[index], length, index);
+        return new Line(columnClues[index], length, index);
     }
 
     private void solveMatrix()
     {
-        Debug.Log("Rows1");
-        goThroughRows();
-        Debug.Log(listToString(_rows));
-        Debug.Log("Columns1");
-        goThroughColumns();
-        Debug.Log(listToString(_rows));
-        Debug.Log("Rows2");
-        goThroughRows();
-        Debug.Log(listToString(_rows));
-        Debug.Log("Columns2");
-        goThroughColumns();
-        Debug.Log(listToString(_rows));
-        Debug.Log("Rows3");
-        goThroughRows();
-        Debug.Log(listToString(_rows));
-        Debug.Log("Columns3");
-        goThroughColumns();
-        Debug.Log(listToString(_rows));
+        int counter = 0;
+        do
+        {
+            resetThisChangeFlag();
+            Debug.Log("Rows" + counter);
+            goThroughRows();
+            Debug.Log(listToString(_rows));
+            Debug.Log("Columns" + counter);
+            goThroughColumns();
+            Debug.Log(listToString(_rows));
+            resetLinesChangeFlags(_rows);
+            resetLinesChangeFlags(_columns);
+            counter++;
+        } while (changeFlag);
+        
+         
+     
     }
     
     private void goThroughRows()
@@ -107,6 +110,7 @@ public class Matrix
         foreach (var row in _rows)
         {
             row.analyzeLine();
+            if (row.wasChanged()) changeFlag = true;
             updateColumns(row);
         }
     }
@@ -116,6 +120,7 @@ public class Matrix
         foreach (var column in _columns)
         {
             column.analyzeLine();
+            if (column.wasChanged()) changeFlag = true;
             updateRows(column);
         }
     }
@@ -134,6 +139,19 @@ public class Matrix
         {
             row.refresh(column);
         }
+    }
+
+    private void resetLinesChangeFlags(List<Line> pLineList)
+    {
+        foreach (var line in pLineList)
+        {
+            line.setChangeFlag(false);
+        }
+    }
+
+    private void resetThisChangeFlag()
+    {
+        this.changeFlag = false;
     }
     
 

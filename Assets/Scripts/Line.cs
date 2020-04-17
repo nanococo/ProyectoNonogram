@@ -14,9 +14,13 @@ public class Line
     
     private int _greaterClueValue;
     private List<int> _sortedClueValues;
+
+    private bool changeFlag;
  
     public Line(List<int> clues, int length, int index)
     {
+        changeFlag = false;
+        
         ClueValues = clues;
         
         _sortedClueValues = new List<int>();
@@ -177,8 +181,10 @@ public class Line
 
         while (pIndex >= 0)
         {
-            Cells[pIndex].discard();
+            discardCell(pIndex);
+            
             pIndex--;
+            
         }
 
     }
@@ -191,12 +197,24 @@ public class Line
 
         while (pIndex < Length )
         {
-            Cells[pIndex].discard();
+            discardCell(pIndex);
             pIndex++;
         }
         
     }
 
+    private void markCellFromIndex(int pIndex, int pQuantity, bool toLeft)
+    { 
+        while (pQuantity > 0)
+        {
+            Cells[pIndex].confirm();
+            if (toLeft) pIndex--;
+            else pIndex++;
+            pQuantity--;
+            setChangeFlag(true);
+        }
+    }
+    
     private int getNextIsolatedSpace(int pCurrentIndex)
     {
 
@@ -265,7 +283,7 @@ public class Line
         int finalIndex = pBlockIndex + pSize;
         while (pBlockIndex < finalIndex)
         {
-            Cells[pBlockIndex].discard();
+            discardCell(pBlockIndex);
             pBlockIndex++;
         }
 
@@ -304,7 +322,11 @@ public class Line
     {
         foreach (Cell cell in Cells)
         {
-            if (!cell.IsConfirmed) cell.discard();
+            if (!cell.IsConfirmed && !cell.IsDiscarded)
+            {
+                cell.discard();
+                setChangeFlag(true);
+            }
         }
     }
 
@@ -334,7 +356,7 @@ public class Line
     {
         try
         {
-            Cells[pIndex].discard();
+            discardCell(pIndex);
         }
         catch (ArgumentOutOfRangeException outOfRangeException)
         {}
@@ -342,11 +364,10 @@ public class Line
         try
         {
             pIndex += pSize + 1;
-            Cells[pIndex].discard(); 
+            discardCell(pIndex);
         } 
         catch (ArgumentOutOfRangeException outOfRangeException)
         {}
-        
     }
 
     private bool isAlreadySurrounded(int pIndex, int pSize)
@@ -391,8 +412,36 @@ public class Line
         return internalList;
 
     }
+
+    public void markCell(int pIndex)
+    {
+        if (!Cells[pIndex].IsConfirmed)
+        {
+            Cells[pIndex].confirm();
+            setChangeFlag(true);
+        }
+    }
+    
+    public void discardCell(int pIndex)
+    {
+        if (!Cells[pIndex].IsDiscarded)
+        {
+            Cells[pIndex].discard();
+            setChangeFlag(true);
+        }
+    }
+    
     //Auxiliary Methods
     
+    public void setChangeFlag(bool pValue)
+    {
+        changeFlag = pValue;
+    }
+
+    public bool wasChanged()
+    {
+        return changeFlag;
+    }
     
     public List<Cell> getCells()
     {

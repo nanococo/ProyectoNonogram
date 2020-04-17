@@ -40,7 +40,7 @@ public class nonogramSolver : MonoBehaviour {
     }
 
     private void createCluesMatrix() {
-        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input3.txt");
+        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input2.txt");
         bool rows = true;
         foreach (string line in lines) {
             if (!skip) {
