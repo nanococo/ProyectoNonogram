@@ -1,35 +1,33 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public static class MathematicalApproach
 {
 
-    public static List<Cell> mathematicalApproachMethod(List<int> pClueValues, int pListStartIndex, int pListEndIndex,
+    public static List<Cell> MathematicalApproachMethod(List<int> pClueValues, int pListStartIndex, int pListEndIndex,
         int pClueStartIndex, int pClueEndIndex, Line pLine)
     {
         int size = pListEndIndex - pListStartIndex + 1;
-        int clueSpannig = getCluesSpanning(pClueValues, pClueStartIndex, pClueEndIndex);
-        int markDeterminator = size - clueSpannig;
+        int clueSpanning = GetCluesSpanning(pClueValues, pClueStartIndex, pClueEndIndex);
+        int markDeterminator = size - clueSpanning;
 
         while (pClueStartIndex <= pClueEndIndex)
         {
 
             int quantity = pClueValues[pClueStartIndex] - markDeterminator;
             pListStartIndex += pClueValues[pClueStartIndex] - 1;
-            pLine = backMarkCells(pListStartIndex, quantity, pLine);
+            pLine = BackMarkCells(pListStartIndex, quantity, pLine);
 
             pClueStartIndex++;
             pListStartIndex += 2;
             
         }
 
-        return pLine.getCells();
+        return pLine.GetCells();
     }
 
     
     //Backmarks the number of cells indicated in the 
-    public static Line backMarkCells(int pIndex, int pQuantity, Line pLine)
+    private static Line BackMarkCells(int pIndex, int pQuantity, Line pLine)
     {
         int internalIndex = pIndex;
         int markedCells = 0;
@@ -38,7 +36,7 @@ public static class MathematicalApproach
         
         while (markedCells != pQuantity)
         {
-            pLine.markCell(internalIndex);
+            pLine.MarkCell(internalIndex);
             markedCells += 1;
             
             internalIndex -= 1;
@@ -49,7 +47,7 @@ public static class MathematicalApproach
     
     
     //Recursive method that get the sum of the clue values inside the indexes and the spaces between them
-    private static int getCluesSpanning(List<int> pClueValues, int pClueStartIndex, int pListEndIndex)
+    private static int GetCluesSpanning(List<int> pClueValues, int pClueStartIndex, int pListEndIndex)
     {
         return getCluesSpanning_aux(pClueStartIndex, pListEndIndex, 0, pClueValues);
     } 

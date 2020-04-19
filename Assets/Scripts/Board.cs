@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Board : MonoBehaviour {
 
-    private int width;
-    private int height;
+    private int _width;
+    private int _height;
 
     // Start is called before the first frame update
     void Start() {
@@ -15,23 +15,23 @@ public class Board : MonoBehaviour {
     public static Board MakeFooObject(int height, int width) {
         GameObject go = new GameObject("Board");
         Board ret = go.AddComponent<Board>();
-        ret.height = height;
-        ret.width = width;
+        ret._height = height;
+        ret._width = width;
         return ret;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    public void SetWidth(int width) {
+        this._width = width;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public void SetHeight(int height) {
+        this._height = height;
     }
 
-    public void draw(GameObject cell) {
-        Debug.Log(this.width);
+    public void Draw(GameObject cell) {
+        Debug.Log(this._width);
         int xDisplacement = 0;
-        for (int i = 0; i < this.width; i++) {
+        for (int i = 0; i < this._width; i++) {
             Instantiate(cell, new Vector2(xDisplacement, 0), Quaternion.identity);
             xDisplacement += 4;
         }

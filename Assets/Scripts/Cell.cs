@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Cell
+﻿public class Cell
 {
 
     public int XIndex;
@@ -27,19 +23,19 @@ public class Cell
 
     }
 
-    public void confirm()
+    public void Confirm()
     {
         Mark = "1";
         IsConfirmed = true;
     }
 
-    public void discard()
+    public void Discard()
     {
         Mark = "x";
         IsDiscarded = true;
     }
 
-    public void updateWithOuterChanges(Cell outerCell)
+    public void UpdateWithOuterChanges(Cell outerCell)
     {
         IsConfirmed = outerCell.IsConfirmed;
         IsDiscarded = outerCell.IsDiscarded;

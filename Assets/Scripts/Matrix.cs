@@ -1,49 +1,47 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.IMGUI.Controls;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Matrix 
 {
     
-    private int height;
-    private int length;
-    private List<List<int>> matrixRepresentation;
-    private List<List<int>> rowClues;
-    private List<List<int>> columnClues;
+    private readonly int _height;
+    private readonly int _length;
+    private List<List<int>> _matrixRepresentation;
+    private readonly List<List<int>> _rowClues;
+    private readonly List<List<int>> _columnClues;
 
-    private List<Line> _rows;
-    private List<Line> _columns;
+    private readonly List<Line> _rows;
+    private readonly List<Line> _columns;
 
-    private bool changeFlag;
+    private bool _changeFlag;
     
 
-    public Matrix(List<List<int>> pMatrixrepresentation, List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
+    public Matrix(List<List<int>> pMatrixRepresentation, List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
     {
 
-        changeFlag = false;
+        _changeFlag = false;
         
-        matrixRepresentation = pMatrixrepresentation;
-        rowClues = pRowClues;
-        columnClues = pColumnClues;
+        _matrixRepresentation = pMatrixRepresentation;
+        _rowClues = pRowClues;
+        _columnClues = pColumnClues;
         
         _rows = new List<Line>();
         _columns = new List<Line>();
 
-        height = pHeight;
-        length = pLength;
+        _height = pHeight;
+        _length = pLength;
 
-        createRows();
-        createColumns();
+        CreateRows();
+        CreateColumns();
         
-        test();
+        Test();
 
         
     }
 
-    public void test()
+    private void Test()
     {
-        solveMatrix();
+        SolveMatrix();
         
         Debug.Log("ROWS");
         Debug.Log(listToString(_rows));
@@ -53,111 +51,112 @@ public class Matrix
         Debug.Log(listToString(_columns));
         Debug.Log("COLUMNS");
         
+        
     }
     
     
-    private void createRows()
+    private void CreateRows()
     {
-        for (int index = 0; index < length; index++)
+        for (int index = 0; index < _length; index++)
         {
-            _rows.Add(createRow(index));
+            _rows.Add(CreateRow(index));
         }
         
     }
 
-    private Line createRow(int index)
+    private Line CreateRow(int index)
     {
-        return new Line(rowClues[index], height, index);
+        return new Line(_rowClues[index], _height, index);
     }
 
-    private void createColumns()
+    private void CreateColumns()
     {
-        for (int index = 0; index < height; index++)
+        for (int index = 0; index < _height; index++)
         {
-            _columns.Add(createColumn(index));
+            _columns.Add(CreateColumn(index));
         }
 
     }
 
-    private Line createColumn(int index)
+    private Line CreateColumn(int index)
     {
-        return new Line(columnClues[index], length, index);
+        return new Line(_columnClues[index], _length, index);
     }
 
-    private void solveMatrix()
+    private void SolveMatrix()
     {
         int counter = 0;
         do
         {
-            resetThisChangeFlag();
+            ResetThisChangeFlag();
             Debug.Log("Rows" + counter);
-            goThroughRows();
+            GoThroughRows();
             Debug.Log(listToString(_rows));
             Debug.Log("Columns" + counter);
-            goThroughColumns();
+            GoThroughColumns();
             Debug.Log(listToString(_rows));
-            resetLinesChangeFlags(_rows);
-            resetLinesChangeFlags(_columns);
+            ResetLinesChangeFlags(_rows);
+            ResetLinesChangeFlags(_columns);
             counter++;
-        } while (changeFlag);
+        } while (_changeFlag);
         
          
      
     }
     
-    private void goThroughRows()
+    private void GoThroughRows()
     {
         foreach (var row in _rows)
         {
-            row.analyzeLine();
-            if (row.wasChanged()) changeFlag = true;
-            updateColumns(row);
+            row.AnalyzeLine();
+            if (row.WasChanged()) _changeFlag = true;
+            UpdateColumns(row);
         }
     }
 
-    private void goThroughColumns()
+    private void GoThroughColumns()
     {
         foreach (var column in _columns)
         {
-            column.analyzeLine();
-            if (column.wasChanged()) changeFlag = true;
-            updateRows(column);
+            column.AnalyzeLine();
+            if (column.WasChanged()) _changeFlag = true;
+            UpdateRows(column);
         }
     }
     
 
-    private void updateColumns(Line row)
+    private void UpdateColumns(Line row)
     {
         foreach (var column in _columns)
         {
-            column.refresh(row);
+            column.Refresh(row);
         }
     }
-    private void updateRows(Line column)
+    private void UpdateRows(Line column)
     {
         foreach (var row in _rows)
         {
-            row.refresh(column);
+            row.Refresh(column);
         }
     }
 
-    private void resetLinesChangeFlags(List<Line> pLineList)
+    private void ResetLinesChangeFlags(List<Line> pLineList)
     {
         foreach (var line in pLineList)
         {
-            line.setChangeFlag(false);
+            line.SetChangeFlag(false);
         }
     }
 
-    private void resetThisChangeFlag()
+    private void ResetThisChangeFlag()
     {
-        this.changeFlag = false;
+        this._changeFlag = false;
     }
     
 
     
-    public string printMatrix<T>(List<List<T>> matrix) {
-        string test = "";
+    public string PrintMatrix<T>(List<List<T>> matrix) {
+        var test = "";
         foreach (var list in matrix)
         {
             test += listToString(list) + "\n";
@@ -168,7 +167,7 @@ public class Matrix
     
     public string listToString<T>(List<T> list)
     {
-        string result = "";
+        var result = "";
         foreach (var element in list)
         {
             result += element + "," + "\n";
