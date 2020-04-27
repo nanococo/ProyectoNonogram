@@ -18,7 +18,7 @@
         IsConfirmed = false;
         IsDiscarded = false;
         
-        Mark = "  ";
+        Mark = "0";
         
 
     }

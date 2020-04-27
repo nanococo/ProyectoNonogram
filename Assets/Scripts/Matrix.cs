@@ -6,27 +6,24 @@ public class Matrix
     
     private readonly int _height;
     private readonly int _length;
-    private List<List<int>> _matrixRepresentation;
-    private readonly List<List<int>> _rowClues;
-    private readonly List<List<int>> _columnClues;
 
-    private readonly List<Line> _rows;
-    private readonly List<Line> _columns;
+    public List<List<int>> RowClues { get;}
+    public List<List<int>> ColumnClues { get;}
+    public List<Line> Rows { get; }
+    public List<Line> Columns { get; }
 
     private bool _changeFlag;
     
-
-    public Matrix(List<List<int>> pMatrixRepresentation, List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
+    public Matrix(List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
     {
 
         _changeFlag = false;
+
+        RowClues = pRowClues;
+        ColumnClues = pColumnClues;
         
-        _matrixRepresentation = pMatrixRepresentation;
-        _rowClues = pRowClues;
-        _columnClues = pColumnClues;
-        
-        _rows = new List<Line>();
-        _columns = new List<Line>();
+        Rows = new List<Line>();
+        Columns = new List<Line>();
 
         _height = pHeight;
         _length = pLength;
@@ -42,16 +39,17 @@ public class Matrix
     private void Test()
     {
         SolveMatrix();
-        
+
         Debug.Log("ROWS");
-        Debug.Log(listToString(_rows));
+        Debug.Log(listToString(Rows));
         Debug.Log("ROWS");
-        Debug.Log("-----------------------------------------------");
-        Debug.Log("COLUMNS");
-        Debug.Log(listToString(_columns));
-        Debug.Log("COLUMNS");
+        // Debug.Log("-----------------------------------------------");
+        // Debug.Log("COLUMNS");
+        // Debug.Log(listToString(Columns));
+        // Debug.Log("COLUMNS");
         
-        
+        var backtracking = new Backtracking(this);
+        backtracking.ExecuteBacktracking();
     }
     
     
@@ -59,28 +57,28 @@ public class Matrix
     {
         for (int index = 0; index < _length; index++)
         {
-            _rows.Add(CreateRow(index));
+            Rows.Add(CreateRow(index));
         }
         
     }
 
     private Line CreateRow(int index)
     {
-        return new Line(_rowClues[index], _height, index);
+        return new Line(RowClues[index], _height, index);
     }
 
     private void CreateColumns()
     {
         for (int index = 0; index < _height; index++)
         {
-            _columns.Add(CreateColumn(index));
+            Columns.Add(CreateColumn(index));
         }
 
     }
 
     private Line CreateColumn(int index)
     {
-        return new Line(_columnClues[index], _length, index);
+        return new Line(ColumnClues[index], _length, index);
     }
 
     private void SolveMatrix()
@@ -91,12 +89,12 @@ public class Matrix
             ResetThisChangeFlag();
             Debug.Log("Rows" + counter);
             GoThroughRows();
-            Debug.Log(listToString(_rows));
+            Debug.Log(listToString(Rows));
             Debug.Log("Columns" + counter);
             GoThroughColumns();
-            Debug.Log(listToString(_rows));
-            ResetLinesChangeFlags(_rows);
-            ResetLinesChangeFlags(_columns);
+            Debug.Log(listToString(Rows));
+            ResetLinesChangeFlags(Rows);
+            ResetLinesChangeFlags(Columns);
             counter++;
         } while (_changeFlag);
         
@@ -106,7 +104,7 @@ public class Matrix
     
     private void GoThroughRows()
     {
-        foreach (var row in _rows)
+        foreach (var row in Rows)
         {
             row.AnalyzeLine();
             if (row.WasChanged()) _changeFlag = true;
@@ -116,7 +114,7 @@ public class Matrix
 
     private void GoThroughColumns()
     {
-        foreach (var column in _columns)
+        foreach (var column in Columns)
         {
             column.AnalyzeLine();
             if (column.WasChanged()) _changeFlag = true;
@@ -127,14 +125,14 @@ public class Matrix
 
     private void UpdateColumns(Line row)
     {
-        foreach (var column in _columns)
+        foreach (var column in Columns)
         {
             column.Refresh(row);
         }
     }
     private void UpdateRows(Line column)
     {
-        foreach (var row in _rows)
+        foreach (var row in Rows)
         {
             row.Refresh(column);
         }

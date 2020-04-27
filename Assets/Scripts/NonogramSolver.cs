@@ -18,11 +18,18 @@ public class NonogramSolver : MonoBehaviour {
         CreateCluesMatrix();
         CreateLogicalMatrixRepresentation();
         
+        // foreach (var rowClue in _rowClues) {
+        //     foreach (var i in rowClue) {
+        //         Debug.Log(i);
+        //     }
+        //     Debug.Log("-------");
+        // }
+        
         Board board = Board.MakeFooObject(_height, _length);
         
         board.Draw(cell);
         
-        matrix = new Matrix(_baseNonogram, _rowClues, _columnClues, _height, _length);
+        matrix = new Matrix(_rowClues, _columnClues, _height, _length);
     }
 
     private void CreateLogicalMatrixRepresentation() {
@@ -39,7 +46,7 @@ public class NonogramSolver : MonoBehaviour {
     }
 
     private void CreateCluesMatrix() {
-        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input2.txt");
+        string[] lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input4.txt");
         bool rows = true;
         foreach (string line in lines) {
             if (!_skip) {
@@ -64,10 +71,10 @@ public class NonogramSolver : MonoBehaviour {
                         }
                         
                         if (rows) {
-                            _columnClues.Add(listToAdd);
+                            _rowClues.Add(listToAdd);
                         }
                         else {
-                            _rowClues.Add(listToAdd);
+                            _columnClues.Add(listToAdd);
                         }
                     }
                 }

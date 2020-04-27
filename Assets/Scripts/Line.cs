@@ -4,32 +4,36 @@ using System.Linq;
 
 public class Line
 {
-    private readonly int _index;
-    private List<Cell> _cells;
+    public int Index { get; }
+    public List<Cell> Cells { get; private set; }
 
-    private readonly int _length;
-    private readonly List<int> _clueValues;
-    
-    private int _greaterClueValue;
-    private readonly List<int> _sortedClueValues;
+    public int Length { get; }
+    public List<int> ClueValues { get; }
+
+    public int GreaterClueValue { get; private set; }
+    public List<int> SortedClueValues { get; }
 
     private bool _changeFlag;
- 
+
+    public int AdditionOfClues { get; set; }
+
+    public bool IsCompleted { get; set; }
+
     public Line(List<int> clues, int length, int index)
     {
         _changeFlag = false;
         
-        _clueValues = clues;
+        ClueValues = clues;
         
-        _sortedClueValues = new List<int>();
-        _sortedClueValues = _clueValues.ToList();
+        SortedClueValues = new List<int>();
+        SortedClueValues = ClueValues.ToList();
         
-        _length = length;
-        _index = index;
+        Length = length;
+        Index = index;
         
         CreateCellList();
         
-        _sortedClueValues = BubbleSort(_sortedClueValues);
+        SortedClueValues = BubbleSort(SortedClueValues);
       
         SetGreaterClue();
         
@@ -37,11 +41,11 @@ public class Line
 
     private void CreateCellList()
     {
-        _cells = new List<Cell>();
-        for (int counter = 0; counter < _length; counter++)
+        Cells = new List<Cell>();
+        for (int counter = 0; counter < Length; counter++)
         {
-            Cell newCell = CreateCell(_index, counter);
-            _cells.Add(newCell);
+            Cell newCell = CreateCell(Index, counter);
+            Cells.Add(newCell);
         }
     }
 
@@ -52,12 +56,12 @@ public class Line
 
     public void Refresh(Line changes) 
     {
-        _cells[changes._index].UpdateWithOuterChanges(changes._cells[_index]);
+        Cells[changes.Index].UpdateWithOuterChanges(changes.Cells[Index]);
     }
     
     public void AnalyzeLine()
     {
-        if (_clueValues[0] == 0) discardLeftSpaces();
+        if (ClueValues[0] == 0) discardLeftSpaces();
         else
         {
             //Debug.Log("INDEX: "+ _index);
@@ -71,15 +75,15 @@ public class Line
     private void MarkCells()
     {
         int index = 0;
-        int finalIndex = _length - 1;
+        int finalIndex = Length - 1;
         if (onlyExistOneSpace())
         {
             index = GetNextIsolatedSpace(0);
             int size = CountIsolatedBlockSize(index);
             finalIndex = index + size - 1;
         }
-        _cells = MathematicalApproach.MathematicalApproachMethod(_clueValues, index, finalIndex, 
-            0, _clueValues.Count - 1, this);  
+        Cells = MathematicalApproach.MathematicalApproachMethod(ClueValues, index, finalIndex, 
+            0, ClueValues.Count - 1, this);  
         
     }
 
@@ -89,7 +93,7 @@ public class Line
         int index = GetNextIsolatedSpace(0);
         int size = CountIsolatedBlockSize(index);
         index += size;
-        if (index < _length)
+        if (index < Length)
         {
             index = GetNextIsolatedSpace(index);
             if (index != -1) return false;
@@ -102,7 +106,7 @@ public class Line
         DiscardIsolatedSpaces();
         SurroundCompletedClue();
         if (IsComplete()) discardLeftSpaces();
-        if (_clueValues.Count == 1) DiscardUnreachableSpaces();
+        if (ClueValues.Count == 1) DiscardUnreachableSpaces();
     }
     
     private void DiscardUnreachableSpaces()
@@ -125,7 +129,7 @@ public class Line
     {
         int index = 0;
         int size;
-        while (index <= _length-1)
+        while (index <= Length-1)
         {
             index = GetNextIsolatedSpace(index);
             if (index == -1) break;
@@ -134,8 +138,8 @@ public class Line
             
             if (IsAnEmptySpace(index))
             {
-                if (_sortedClueValues.Count == 0) DiscardIsolatedSpace(index, size);
-                else if (size < _sortedClueValues[0]) DiscardIsolatedSpace(index, size);
+                if (SortedClueValues.Count == 0) DiscardIsolatedSpace(index, size);
+                else if (size < SortedClueValues[0]) DiscardIsolatedSpace(index, size);
             }
 
             index += size;
@@ -143,11 +147,11 @@ public class Line
     }
 
 
-    private bool IsComplete()
+    public bool IsComplete()
     {
         bool lineComplete = true;
         int index = 0;
-        foreach (int clue in _clueValues)
+        foreach (int clue in ClueValues)
         {
             index = GetNextConfirmedBlockIndex(index);
             if (index == -1 )
@@ -166,6 +170,10 @@ public class Line
             index += size;
         }
 
+        if (lineComplete) {
+            IsCompleted = true;
+        }
+
         return lineComplete;
     }
     
@@ -174,7 +182,7 @@ public class Line
     
     {
 
-        int maxReach = _clueValues[0] - pBlockSize;
+        int maxReach = ClueValues[0] - pBlockSize;
         pIndex -= maxReach;
         pIndex--;
 
@@ -191,10 +199,10 @@ public class Line
     private void DiscardToRight(int pIndex, int pBlockSize)
     {
         
-        int maxReach = _clueValues[_clueValues.Count-1] - pBlockSize;
+        int maxReach = ClueValues[ClueValues.Count-1] - pBlockSize;
         pIndex += maxReach;
 
-        while (pIndex < _length )
+        while (pIndex < Length )
         {
             DiscardCell(pIndex);
             pIndex++;
@@ -206,7 +214,7 @@ public class Line
     { 
         while (pQuantity > 0)
         {
-            _cells[pIndex].Confirm();
+            Cells[pIndex].Confirm();
             if (toLeft) pIndex--;
             else pIndex++;
             pQuantity--;
@@ -219,10 +227,10 @@ public class Line
 
         int internalIndex = pCurrentIndex;
         
-        while (_cells[internalIndex].IsDiscarded)
+        while (Cells[internalIndex].IsDiscarded)
         {
             internalIndex++;
-            if (internalIndex == _length) return -1;
+            if (internalIndex == Length) return -1;
         }
 
         return internalIndex;
@@ -235,11 +243,11 @@ public class Line
         int size = 0;
         int internalIndex = pBlockIndex;
         
-        while (!_cells[internalIndex].IsDiscarded)
+        while (!Cells[internalIndex].IsDiscarded)
         {
             size++;
             internalIndex++;
-            if (internalIndex == _length) return size;
+            if (internalIndex == Length) return size;
         }
 
         return size;
@@ -250,11 +258,11 @@ public class Line
     {
         
         int internalIndex = pBlockIndex;
-        while (!_cells[internalIndex].IsDiscarded)
+        while (!Cells[internalIndex].IsDiscarded)
         {
-            if (_cells[internalIndex].IsConfirmed) return false;
+            if (Cells[internalIndex].IsConfirmed) return false;
             internalIndex++;
-            if (internalIndex == _length) return true;
+            if (internalIndex == Length) return true;
         }
 
         return true;
@@ -265,11 +273,11 @@ public class Line
     {
         
         int internalIndex = pBlockIndex;
-        while (!_cells[internalIndex].IsDiscarded)
+        while (!Cells[internalIndex].IsDiscarded)
         {
-            if (!_cells[internalIndex].IsConfirmed) return false;
+            if (!Cells[internalIndex].IsConfirmed) return false;
             internalIndex++;
-            if (internalIndex == _length) return true;
+            if (internalIndex == Length) return true;
         }
 
         return true;
@@ -293,10 +301,10 @@ public class Line
     {
         int confirmedBlockSize = 0;
         
-        while (_cells[pBlockIndex].IsConfirmed)
+        while (Cells[pBlockIndex].IsConfirmed)
         {
             confirmedBlockSize++;
-            if (pBlockIndex == _length - 1) break;
+            if (pBlockIndex == Length - 1) break;
             pBlockIndex++;
         }
         
@@ -305,10 +313,10 @@ public class Line
 
     private int GetNextConfirmedBlockIndex(int pCurrentIndex)
     {
-        if (pCurrentIndex >= _length) return -1;
-        while (!_cells[pCurrentIndex].IsConfirmed)
+        if (pCurrentIndex >= Length) return -1;
+        while (!Cells[pCurrentIndex].IsConfirmed)
         {
-            if (pCurrentIndex == _length - 1) return -1;
+            if (pCurrentIndex == Length - 1) return -1;
             pCurrentIndex++;
         }
         
@@ -319,7 +327,7 @@ public class Line
 
     private void discardLeftSpaces()
     {
-        foreach (Cell cell in _cells)
+        foreach (Cell cell in Cells)
         {
             if (!cell.IsConfirmed && !cell.IsDiscarded)
             {
@@ -338,11 +346,11 @@ public class Line
             index = GetNextConfirmedBlockIndex(index);
             if(index == -1) break;
             size = CountConfirmedBlockSize(index);
-            if (size == _greaterClueValue && !IsAlreadySurrounded(index-1, size))
+            if (size == GreaterClueValue && !IsAlreadySurrounded(index-1, size))
             {
                 
                 DiscardBlockBoundaries(index-1, size);
-                _sortedClueValues.RemoveAt(_sortedClueValues.Count-1);
+                SortedClueValues.RemoveAt(SortedClueValues.Count-1);
                 SetGreaterClue();
             }
 
@@ -372,21 +380,21 @@ public class Line
     private bool IsAlreadySurrounded(int pIndex, int pSize)
     {
      
-        if (pIndex < 0 && pIndex + pSize + 1 >= _length) return true;
+        if (pIndex < 0 && pIndex + pSize + 1 >= Length) return true;
         
-        if (pIndex < 0) return _cells[pIndex + pSize + 1].IsDiscarded;
+        if (pIndex < 0) return Cells[pIndex + pSize + 1].IsDiscarded;
         
-        if (pIndex + pSize + 1 >= _length) return _cells[pIndex].IsDiscarded;
+        if (pIndex + pSize + 1 >= Length) return Cells[pIndex].IsDiscarded;
         
-        else return _cells[pIndex].IsDiscarded && _cells[pIndex + pSize + 1].IsDiscarded;
+        else return Cells[pIndex].IsDiscarded && Cells[pIndex + pSize + 1].IsDiscarded;
         
     }
     
     
     public void SetGreaterClue()
     {
-        if (_sortedClueValues.Count == 0) return;
-        _greaterClueValue = _sortedClueValues[_sortedClueValues.Count - 1];   
+        if (SortedClueValues.Count == 0) return;
+        GreaterClueValue = SortedClueValues[SortedClueValues.Count - 1];   
     }
     
     public List<int> BubbleSort(List<int> list)
@@ -414,18 +422,18 @@ public class Line
 
     public void MarkCell(int pIndex)
     {
-        if (!_cells[pIndex].IsConfirmed)
+        if (!Cells[pIndex].IsConfirmed)
         {
-            _cells[pIndex].Confirm();
+            Cells[pIndex].Confirm();
             SetChangeFlag(true);
         }
     }
     
     public void DiscardCell(int pIndex)
     {
-        if (!_cells[pIndex].IsDiscarded)
+        if (!Cells[pIndex].IsDiscarded)
         {
-            _cells[pIndex].Discard();
+            Cells[pIndex].Discard();
             SetChangeFlag(true);
         }
     }
@@ -444,12 +452,12 @@ public class Line
     
     public List<Cell> GetCells()
     {
-        return _cells;
+        return Cells;
     }
     
     public override string ToString() { 
         string test = "|";
-        foreach (var cell in _cells)
+        foreach (var cell in Cells)
         {
             test += cell.Mark + "|";
         }
