@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UIElements;
 
 public class Line
 {
@@ -60,7 +61,6 @@ public class Line
         if (_clueValues[0] == 0) discardLeftSpaces();
         else
         {
-            //Debug.Log("INDEX: "+ _index);
             DiscardCells();
             MarkCells();
 
@@ -347,7 +347,7 @@ public class Line
             }
 
             index += size;
-        }
+        }  
       
     }
 
@@ -411,6 +411,29 @@ public class Line
         return internalList;
 
     }
+
+    public bool isBroken() // establishes if the configuration of the line is impossible due to the configuration of the given clues
+    {
+        return false;
+    }
+    
+    //420 line remains untouched
+    
+    public bool validBlock(int pBlockIndex, int pClueIndex)
+    {
+        
+        return false;    
+    }
+
+    public int distanceToRight(int pUpperPtrIndex)
+    {
+        return _length - (pUpperPtrIndex + 1);
+    }
+
+    public int distanceToLeft(int pLowerPtrIndex)
+    {
+        return pLowerPtrIndex;
+    } 
 
     public void MarkCell(int pIndex)
     {
