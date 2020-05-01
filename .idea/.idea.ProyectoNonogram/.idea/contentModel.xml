@@ -19,6 +19,7 @@
           <e p="MathematicalApproach.cs" t="Include" />
           <e p="Matrix.cs" t="Include" />
           <e p="nonogramSolver.cs" t="Include" />
+          <e p="TESTS.cs" t="Include" />
         </e>
       </e>
       <e p="obj" t="ExcludeRecursive" />

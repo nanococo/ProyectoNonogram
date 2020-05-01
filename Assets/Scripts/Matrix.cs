@@ -48,8 +48,10 @@ public class Matrix
         // Debug.Log(listToString(Columns));
         // Debug.Log("COLUMNS");
         
-        var backtracking = new Backtracking(this);
-        backtracking.ExecuteBacktracking();
+        //Le comenté esa vara no se asuste perro
+        
+        //var backtracking = new Backtracking(this);
+        //backtracking.ExecuteBacktracking();
     }
     
     

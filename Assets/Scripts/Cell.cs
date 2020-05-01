@@ -35,6 +35,13 @@
         IsDiscarded = true;
     }
 
+    public void undo()
+    {
+        Mark = "0";
+        IsConfirmed = false;
+        IsDiscarded = false;
+    }
+
     public void UpdateWithOuterChanges(Cell outerCell)
     {
         IsConfirmed = outerCell.IsConfirmed;
