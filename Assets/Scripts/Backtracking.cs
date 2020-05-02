@@ -17,10 +17,11 @@ public class Backtracking {
     }
 
     public bool ExecuteBacktracking() {
+
         for (var i = 0; i < _matrix.Rows.Count; i++) {
-            if (!_matrix.Rows[i].IsComplete()) {
+            if (!_matrix.Rows[i].IsCompleteBacktracking()) {
                 for (var j = 0; j < _matrix.Rows[i].Cells.Count; j++) {
-                    if (IsSafe(i, j)) {
+                    if (IsSafe(i, j) && _matrix.Rows[i].Cells[j].Mark!="1" && _matrix.Rows[i].Cells[j].Mark!="x") {
                         _matrix.Rows[i].Cells[j].Mark = "1";
                         if (ExecuteBacktracking()) {
                             return true;
@@ -31,15 +32,34 @@ public class Backtracking {
                 }
             }
         }
-        return false;
+        
+        // var line = "";
+        // foreach (var matrixRow in _matrix.Rows) {
+        //     foreach (var matrixRowCell in matrixRow.Cells) {
+        //         line += matrixRowCell.Mark;
+        //     }
+        //     line += "\n";
+        // }
+        // Debug.Log(line);
+
+        return IsFinished();
+        
+    }
+
+    private bool IsFinished() {
+        var isComplete = false;
+        foreach (var matrixRow in _matrix.Rows) {
+            isComplete = matrixRow.IsCompleteBacktracking();
+        }
+        return isComplete;
     }
 
     private int _clueIndex; //Global variable used in the is safe and valid lock methods.
     private int _globalIndex; //Global index used in the isSafe method chain.
     
-    public bool IsSafe(int rowNumber, int cellNumber)
-    {
-
+    public bool IsSafe(int rowNumber, int cellNumber) {
+        var originalMark = _matrix.Rows[rowNumber].Cells[cellNumber].Mark;
+        
         Line processingLine = _matrix.Rows[rowNumber];
         processingLine.MarkCell(cellNumber);
 
@@ -55,7 +75,7 @@ public class Backtracking {
             if(!lineSafe) break;
         }
         
-        processingLine.Cells[cellNumber].undo();
+        processingLine.Cells[cellNumber].undo(originalMark);
         
         return lineSafe;
     }

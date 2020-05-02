@@ -176,7 +176,28 @@ public class Line
 
         return lineComplete;
     }
-    
+
+    public bool IsCompleteBacktracking() {
+
+        var cluesValueAddition = 0;
+        var totalCluesFound = 0;
+        
+        foreach (var clueValue in ClueValues) {
+            cluesValueAddition += clueValue;
+        }
+        
+        foreach (var cell in Cells) {
+            if (cell.Mark=="1") {
+                totalCluesFound++;
+            }
+        }
+
+        if (totalCluesFound==cluesValueAddition) {
+            return true;
+        }
+        return false;
+    }
+
     //Auxiliary Methods
     private void DiscardToLeft(int pIndex, int pBlockSize) 
     

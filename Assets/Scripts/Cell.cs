@@ -35,9 +35,8 @@
         IsDiscarded = true;
     }
 
-    public void undo()
-    {
-        Mark = "0";
+    public void undo(string originalMark) {
+        Mark = originalMark;
         IsConfirmed = false;
         IsDiscarded = false;
     }

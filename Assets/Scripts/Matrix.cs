@@ -39,7 +39,12 @@ public class Matrix
     private void Test()
     {
         SolveMatrix();
+        
+        //Debug.Log(Rows[1].Cells[1].Mark);
 
+        var backtracking = new Backtracking(this);
+        backtracking.ExecuteBacktracking();
+        
         Debug.Log("ROWS");
         Debug.Log(listToString(Rows));
         Debug.Log("ROWS");
@@ -49,9 +54,6 @@ public class Matrix
         // Debug.Log("COLUMNS");
         
         //Le comenté esa vara no se asuste perro
-        
-        //var backtracking = new Backtracking(this);
-        //backtracking.ExecuteBacktracking();
     }
     
     
