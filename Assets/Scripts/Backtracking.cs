@@ -21,26 +21,30 @@ public class Backtracking {
         for (var i = 0; i < _matrix.Rows.Count; i++) {
             if (!_matrix.Rows[i].IsCompleteBacktracking()) {
                 for (var j = 0; j < _matrix.Rows[i].Cells.Count; j++) {
-                    if (IsSafe(i, j) && _matrix.Rows[i].Cells[j].Mark!="1" && _matrix.Rows[i].Cells[j].Mark!="x") {
-                        _matrix.Rows[i].Cells[j].Mark = "1";
+                    if (_matrix.Rows[i].Cells[j].Mark!="1" && _matrix.Rows[i].Cells[j].Mark!="x" && IsSafe(i, j)) {
+                        //_matrix.Rows[i].Cells[j].Mark = "1";
+                        _matrix.Rows[i].Cells[j].Confirm();
+                        _matrix.Columns[j].Cells[i].Confirm();
                         if (ExecuteBacktracking()) {
                             return true;
                         } else {
-                            _matrix.Rows[i].Cells[j].Mark = "0";
+                            //_matrix.Rows[i].Cells[j].Mark = "0";
+                            _matrix.Rows[i].Cells[j].DeConfirm();
+                            _matrix.Columns[j].Cells[i].DeConfirm();
                         }
                     }
                 }
             }
         }
         
-        // var line = "";
-        // foreach (var matrixRow in _matrix.Rows) {
-        //     foreach (var matrixRowCell in matrixRow.Cells) {
-        //         line += matrixRowCell.Mark;
-        //     }
-        //     line += "\n";
-        // }
-        // Debug.Log(line);
+        var line = "";
+        foreach (var matrixRow in _matrix.Rows) {
+            foreach (var matrixRowCell in matrixRow.Cells) {
+                line += matrixRowCell.Mark;
+            }
+            line += "\n";
+        }
+        Debug.Log(line);
 
         return IsFinished();
         
@@ -59,11 +63,11 @@ public class Backtracking {
     
     public bool IsSafe(int rowNumber, int cellNumber) {
         var originalMark = _matrix.Rows[rowNumber].Cells[cellNumber].Mark;
-        
-        Line processingLine = _matrix.Rows[rowNumber];
-        processingLine.MarkCell(cellNumber);
+        var lineSafe = true;
 
-        bool lineSafe = true;
+        //------ROWS FIRST------//
+        var processingLine = _matrix.Rows[rowNumber];
+        processingLine.MarkCell(cellNumber);
         _globalIndex = 0;
         _clueIndex = 0;
         
@@ -71,11 +75,28 @@ public class Backtracking {
         {
             _globalIndex = processingLine.GetNextConfirmedBlockIndex(_globalIndex);
             if (_globalIndex == -1) break;
-            lineSafe = validBlock(_globalIndex, processingLine);
+            lineSafe = ValidBlock(_globalIndex, processingLine);
             if(!lineSafe) break;
         }
         
-        processingLine.Cells[cellNumber].undo(originalMark);
+        processingLine.Cells[cellNumber].Undo(originalMark);
+        
+        //------COLUMNS SECOND------//
+        processingLine = _matrix.Columns[cellNumber];
+        processingLine.MarkCell(rowNumber);
+        _globalIndex = 0;
+        _clueIndex = 0;
+        
+        while (true)
+        {
+            _globalIndex = processingLine.GetNextConfirmedBlockIndex(_globalIndex);
+            if (_globalIndex == -1) break;
+            lineSafe = ValidBlock(_globalIndex, processingLine);
+            if(!lineSafe) break;
+        }
+        
+        processingLine.Cells[rowNumber].Undo(originalMark);
+        
         
         return lineSafe;
     }
@@ -90,17 +111,17 @@ public class Backtracking {
         {
             _globalIndex = testLine.GetNextConfirmedBlockIndex(_globalIndex);
             if (_globalIndex == -1) break; 
-            lineSafe = validBlock(_globalIndex, testLine);
+            lineSafe = ValidBlock(_globalIndex, testLine);
             if(!lineSafe) break;
         }
 
         return lineSafe;
     }
 
-    public bool validBlock(int pBlockIndex, Line pProcessingLine)
+    public bool ValidBlock(int pBlockIndex, Line pProcessingLine)
     {
         
-        while (testBlockWithClue(pBlockIndex, pProcessingLine) == false)
+        while (TestBlockWithClue(pBlockIndex, pProcessingLine) == false)
         {
             if (_clueIndex == pProcessingLine.ClueValues.Count - 1) return false;
             _clueIndex++;
@@ -111,11 +132,11 @@ public class Backtracking {
 
     }
 
-    private bool testBlockWithClue(int pBlockIndex, Line pProcessingLine)
+    private bool TestBlockWithClue(int pBlockIndex, Line pProcessingLine)
     {
         
         ////Debug.Log("Clue: "+pProcessingLine.ClueValues[_clueIndex]);
-        
+        Debug.Log(_clueIndex);
         if (pProcessingLine.CountConfirmedBlockSize(pBlockIndex) > pProcessingLine.ClueValues[_clueIndex])
         {
             //Debug.Log(pBlockIndex);
