@@ -53,7 +53,7 @@ public class Matrix
         // Debug.Log(listToString(Columns));
         // Debug.Log("COLUMNS");
         
-        //Le comenté esa vara no se asuste perro
+        
     }
     
     

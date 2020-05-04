@@ -38,12 +38,13 @@
     public void DeConfirm() {
         IsConfirmed = false;
         IsDiscarded = false;
+        Mark = "0";
     }
 
-    public void Undo(string originalMark) {
+    public void Undo(string originalMark, bool originalIsConfirmed, bool originalIsDiscarded) {
         Mark = originalMark;
-        IsConfirmed = false;
-        IsDiscarded = false;
+        IsConfirmed = originalIsConfirmed;
+        IsDiscarded = originalIsDiscarded;
     }
 
     public void UpdateWithOuterChanges(Cell outerCell)
@@ -51,6 +52,11 @@
         IsConfirmed = outerCell.IsConfirmed;
         IsDiscarded = outerCell.IsDiscarded;
         Mark = outerCell.Mark;
+    }
+
+    public override string ToString()
+    {
+        return Mark;
     }
 
 }

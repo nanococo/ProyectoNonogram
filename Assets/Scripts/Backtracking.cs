@@ -62,31 +62,53 @@ public class Backtracking {
     private int _globalIndex; //Global index used in the isSafe method chain.
     
     public bool IsSafe(int rowNumber, int cellNumber) {
+        
         var originalMark = _matrix.Rows[rowNumber].Cells[cellNumber].Mark;
+        var originalIsConfirmed = _matrix.Rows[rowNumber].Cells[cellNumber].IsConfirmed;
+        var originalIsDiscarded = _matrix.Rows[rowNumber].Cells[cellNumber].IsDiscarded;
+        
         var lineSafe = true;
 
         //------ROWS FIRST------//
+        
+        Debug.Log("Row");
+        
+        Debug.Log("RowIndex: "+rowNumber);
+        
         var processingLine = _matrix.Rows[rowNumber];
-        processingLine.MarkCell(cellNumber);
-        _globalIndex = 0;
-        _clueIndex = 0;
         
-        while (true)
-        {
-            _globalIndex = processingLine.GetNextConfirmedBlockIndex(_globalIndex);
-            if (_globalIndex == -1) break;
-            lineSafe = ValidBlock(_globalIndex, processingLine);
-            if(!lineSafe) break;
-        }
+        lineSafe = checkLine(processingLine, cellNumber);
         
-        processingLine.Cells[cellNumber].Undo(originalMark);
+        processingLine.Cells[cellNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded);
+       
+        if (!lineSafe) return false;
         
         //------COLUMNS SECOND------//
+        
+        Debug.Log("Collumn");
+        
+        Debug.Log("CollumnIndex: "+cellNumber);
+        
         processingLine = _matrix.Columns[cellNumber];
-        processingLine.MarkCell(rowNumber);
+        
+        lineSafe = checkLine(processingLine, rowNumber);
+        
+        processingLine.Cells[rowNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded);
+        
+        return lineSafe;
+    }
+
+    public bool checkLine(Line processingLine, int cellNumber)
+    {
+        var lineSafe = true;
+        
+        processingLine.MarkCell(cellNumber);
+        
+        Debug.Log(listToString(processingLine.Cells));
+        
         _globalIndex = 0;
         _clueIndex = 0;
-        
+
         while (true)
         {
             _globalIndex = processingLine.GetNextConfirmedBlockIndex(_globalIndex);
@@ -94,9 +116,6 @@ public class Backtracking {
             lineSafe = ValidBlock(_globalIndex, processingLine);
             if(!lineSafe) break;
         }
-        
-        processingLine.Cells[rowNumber].Undo(originalMark);
-        
         
         return lineSafe;
     }
@@ -120,7 +139,9 @@ public class Backtracking {
 
     public bool ValidBlock(int pBlockIndex, Line pProcessingLine)
     {
-        
+
+        if (_clueIndex >= pProcessingLine.ClueValues.Count - 1) return false;
+
         while (TestBlockWithClue(pBlockIndex, pProcessingLine) == false)
         {
             if (_clueIndex == pProcessingLine.ClueValues.Count - 1) return false;
@@ -135,8 +156,8 @@ public class Backtracking {
     private bool TestBlockWithClue(int pBlockIndex, Line pProcessingLine)
     {
         
-        ////Debug.Log("Clue: "+pProcessingLine.ClueValues[_clueIndex]);
-        Debug.Log(_clueIndex);
+        //Debug.Log("Clue size: "+pProcessingLine.ClueValues.Count);
+        //Debug.Log("Clue index: "+_clueIndex);
         if (pProcessingLine.CountConfirmedBlockSize(pBlockIndex) > pProcessingLine.ClueValues[_clueIndex])
         {
             //Debug.Log(pBlockIndex);
@@ -327,4 +348,17 @@ public class Backtracking {
     {
         return pLowerPtrIndex;
     }
+    
+    public string listToString<T>(List<T> list)
+    {
+        string result = "";
+        foreach (var element in list)
+        {
+            result += element + ",";
+        }
+
+        result += "";
+        return result;
+    }
+    
 }
