@@ -17,11 +17,11 @@ public class TESTS
         setTest();
         Debug.Log(backtracking.IsSafeForTesting(_testLine));
         
-    }
+    } 
 
     public void setTest()
     {
-        _testLine.Cells[0].Confirm();
+        //_testLine.Cells[0].Confirm();
         //_testLine.Cells[1].Confirm();
         // _testLine.Cells[2].Confirm();
         //_testLine.Cells[3].Confirm();
@@ -42,7 +42,7 @@ public class TESTS
         //_testLine.Cells[18].Confirm();
         //_testLine.Cells[19].Confirm();
         
-        /*
+        /* +  
         _testLine.Cells[0].Discard();
         _testLine.Cells[1].Discard();
         _testLine.Cells[2].Discard();
