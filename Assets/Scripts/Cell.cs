@@ -6,6 +6,7 @@
     
     public bool IsConfirmed;
     public bool IsDiscarded;
+    public bool DemonMark;
 
     public string Mark; //'x' for discarded, '1' for confirmed, '0' for not processed
     
@@ -17,6 +18,7 @@
         
         IsConfirmed = false;
         IsDiscarded = false;
+        DemonMark = false;
         
         Mark = "0";
         

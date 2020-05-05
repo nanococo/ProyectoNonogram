@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class Matrix 
 {
@@ -13,6 +14,8 @@ public class Matrix
     public List<Line> Columns { get; }
 
     private bool _changeFlag;
+    
+    private Stopwatch stopWatch = new Stopwatch();
     
     public Matrix(List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
     {
@@ -42,12 +45,17 @@ public class Matrix
         
         //Debug.Log(Rows[1].Cells[1].Mark);
 
+        stopWatch.Start();
         var backtracking = new Backtracking(this);
         backtracking.ExecuteBacktracking();
+        stopWatch.Stop();
+        System.TimeSpan ts = stopWatch.Elapsed;
         
         Debug.Log("ROWS");
         Debug.Log(listToString(Rows));
         Debug.Log("ROWS");
+        
+        Debug.Log((float) ts.TotalMinutes);
         // Debug.Log("-----------------------------------------------");
         // Debug.Log("COLUMNS");
         // Debug.Log(listToString(Columns));
@@ -178,6 +186,18 @@ public class Matrix
         result += "";
         return result;
     }
-    
-    
+
+
+    public void RemoveDemonMarks() {
+        foreach (var row in Rows) {
+            foreach (var rowCell in row.Cells) {
+                rowCell.DemonMark = false;
+            }
+        }
+        foreach (var column in Columns) {
+            foreach (var rowCell in column.Cells) {
+                rowCell.DemonMark = false;
+            }
+        }
+    }
 }

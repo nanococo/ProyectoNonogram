@@ -21,40 +21,51 @@ public class Backtracking {
         for (var i = 0; i < _matrix.Rows.Count; i++) {
             if (!_matrix.Rows[i].IsCompleteBacktracking()) {
                 for (var j = 0; j < _matrix.Rows[i].Cells.Count; j++) {
-                    if (!_matrix.Rows[i].Cells[j].IsConfirmed && !_matrix.Rows[i].Cells[j].IsDiscarded && IsSafe(i, j)) {
+                    if (!_matrix.Rows[i].Cells[j].DemonMark && !_matrix.Rows[i].Cells[j].IsConfirmed && !_matrix.Rows[i].Cells[j].IsDiscarded && IsSafe(i, j)) {
                         //_matrix.Rows[i].Cells[j].Mark = "1";
                         _matrix.Rows[i].Cells[j].Confirm();
                         _matrix.Columns[j].Cells[i].Confirm();
+                        _matrix.RemoveDemonMarks();
                         if (ExecuteBacktracking()) {
                             return true;
                         } else {
                             //_matrix.Rows[i].Cells[j].Mark = "0";
+                            _matrix.Rows[i].Cells[j].DemonMark=true;
                             _matrix.Rows[i].Cells[j].DeConfirm();
+                            _matrix.Columns[j].Cells[i].DemonMark=true;
                             _matrix.Columns[j].Cells[i].DeConfirm();
                         }
                     }
                 }
             }
         }
-        
-        var line = "";
-        foreach (var matrixRow in _matrix.Rows) {
-            foreach (var matrixRowCell in matrixRow.Cells) {
-                line += matrixRowCell.Mark;
-            }
-            line += "\n";
-        }
-        Debug.Log(line);
 
         return IsFinished();
-        
     }
 
     private bool IsFinished() {
         var isComplete = false;
         foreach (var matrixRow in _matrix.Rows) {
-            isComplete = matrixRow.IsCompleteBacktracking();
+            if (!matrixRow.IsCompleteBacktracking()) {
+                isComplete = false;
+                break;
+            }
+            isComplete = true;
         }
+
+        if (isComplete) {
+            foreach (var matrixColumn in _matrix.Columns) {
+                if (!matrixColumn.IsCompleteBacktracking()) {
+                    isComplete = false;
+                    break;
+                }
+            }    
+        }
+
+        if (isComplete) {
+            Debug.Log(isComplete);
+        }
+        
         return isComplete;
     }
 

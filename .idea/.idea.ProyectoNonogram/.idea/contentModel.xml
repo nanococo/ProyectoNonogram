@@ -5,6 +5,30 @@
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
+          <e p="10x10_45.txt" t="Include" />
+          <e p="10x10_45_tablero.txt" t="Include" />
+          <e p="10x10_55.txt" t="Include" />
+          <e p="10x10_55_tablero.txt" t="Include" />
+          <e p="10x10_65.txt" t="Include" />
+          <e p="10x10_65_tablero.txt" t="Include" />
+          <e p="15x15_45.txt" t="Include" />
+          <e p="15x15_45_tablero.txt" t="Include" />
+          <e p="15x15_55.txt" t="Include" />
+          <e p="15x15_55_tablero.txt" t="Include" />
+          <e p="15x15_65.txt" t="Include" />
+          <e p="15x15_65_tablero.txt" t="Include" />
+          <e p="20x20_45.txt" t="Include" />
+          <e p="20x20_45_tablero.txt" t="Include" />
+          <e p="20x20_55.txt" t="Include" />
+          <e p="20x20_55_tablero.txt" t="Include" />
+          <e p="20x20_65.txt" t="Include" />
+          <e p="20x20_65_tablero.txt" t="Include" />
+          <e p="5x5_45.txt" t="Include" />
+          <e p="5x5_45_tablero.txt" t="Include" />
+          <e p="5x5_55.txt" t="Include" />
+          <e p="5x5_55_tablero.txt" t="Include" />
+          <e p="5x5_65.txt" t="Include" />
+          <e p="5x5_65_tablero.txt" t="Include" />
           <e p="Backtracking.cs" t="Include" />
           <e p="Board.cs" t="Include" />
           <e p="Cell.cs" t="Include" />
