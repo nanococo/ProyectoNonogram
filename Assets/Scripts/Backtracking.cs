@@ -167,7 +167,7 @@ public class Backtracking {
         int upperPtrIndex = setUpperIndex(pBlockIndex, pProcessingLine);
         int lowerPtrIndex = setLowerIndex(pProcessingLine, upperPtrIndex, pBlockIndex);
         
-
+        
 
         if (!wasTooSmallSpace(lowerPtrIndex, upperPtrIndex, pProcessingLine))
         {
@@ -176,11 +176,14 @@ public class Backtracking {
 
         return false;
     }
-
+   
     private bool wasTooSmallSpace(int pLowerIndex, int pUpperIndex, Line pProcessingLine)
     {
+        if (pLowerIndex < 0) return true;
+        
         while (pLowerIndex < pUpperIndex)
         {
+            
             if (pProcessingLine.Cells[pLowerIndex].IsDiscarded)
             {
                 //Debug.Log("Too Small Space");
@@ -261,6 +264,10 @@ public class Backtracking {
     {
         int indexesDistance = pUpperIndex - pBlockIndex + 1;
         int cellsToMove = pProcessingLine.ClueValues[_clueIndex] - indexesDistance;
+        
+        Debug.Log(pBlockIndex);
+        Debug.Log(cellsToMove);
+        
         return pBlockIndex - cellsToMove;
     }
 
