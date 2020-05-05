@@ -21,7 +21,7 @@ public class Backtracking {
         for (var i = 0; i < _matrix.Rows.Count; i++) {
             if (!_matrix.Rows[i].IsCompleteBacktracking()) {
                 for (var j = 0; j < _matrix.Rows[i].Cells.Count; j++) {
-                    if (_matrix.Rows[i].Cells[j].Mark!="1" && _matrix.Rows[i].Cells[j].Mark!="x" && IsSafe(i, j)) {
+                    if (!_matrix.Rows[i].Cells[j].IsConfirmed && !_matrix.Rows[i].Cells[j].IsDiscarded && IsSafe(i, j)) {
                         //_matrix.Rows[i].Cells[j].Mark = "1";
                         _matrix.Rows[i].Cells[j].Confirm();
                         _matrix.Columns[j].Cells[i].Confirm();
@@ -71,9 +71,9 @@ public class Backtracking {
 
         //------ROWS FIRST------//
         
-        Debug.Log("Row");
+        //Debug.Log("Row");
         
-        Debug.Log("RowIndex: "+rowNumber);
+        //Debug.Log("RowIndex: "+rowNumber);
         
         var processingLine = _matrix.Rows[rowNumber];
         
@@ -85,9 +85,9 @@ public class Backtracking {
         
         //------COLUMNS SECOND------//
         
-        Debug.Log("Collumn");
+        //Debug.Log("Collumn");
         
-        Debug.Log("CollumnIndex: "+cellNumber);
+        //Debug.Log("CollumnIndex: "+cellNumber);
         
         processingLine = _matrix.Columns[cellNumber];
         
@@ -104,7 +104,7 @@ public class Backtracking {
         
         processingLine.MarkCell(cellNumber);
         
-        Debug.Log(listToString(processingLine.Cells));
+        //Debug.Log(listToString(processingLine.Cells));
         
         _globalIndex = 0;
         _clueIndex = 0;
@@ -120,27 +120,12 @@ public class Backtracking {
         return lineSafe;
     }
     
-    public bool IsSafeForTesting(Line testLine)
-    {
-        bool lineSafe = true;
-        _globalIndex = 0;
-        _clueIndex = 0;
-        
-        while (true)
-        {
-            _globalIndex = testLine.GetNextConfirmedBlockIndex(_globalIndex);
-            if (_globalIndex == -1) break; 
-            lineSafe = ValidBlock(_globalIndex, testLine);
-            if(!lineSafe) break;
-        }
-
-        return lineSafe;
-    }
+    
 
     public bool ValidBlock(int pBlockIndex, Line pProcessingLine)
     {
 
-        if (_clueIndex >= pProcessingLine.ClueValues.Count - 1) return false;
+        if (_clueIndex >= pProcessingLine.ClueValues.Count) return false;
 
         while (TestBlockWithClue(pBlockIndex, pProcessingLine) == false)
         {
@@ -156,8 +141,8 @@ public class Backtracking {
     private bool TestBlockWithClue(int pBlockIndex, Line pProcessingLine)
     {
         
-        //Debug.Log("Clue size: "+pProcessingLine.ClueValues.Count);
-        //Debug.Log("Clue index: "+_clueIndex);
+        Debug.Log("Clue size: "+pProcessingLine.ClueValues.Count);
+        Debug.Log("Clue index: "+_clueIndex);
         if (pProcessingLine.CountConfirmedBlockSize(pBlockIndex) > pProcessingLine.ClueValues[_clueIndex])
         {
             //Debug.Log(pBlockIndex);
@@ -224,8 +209,8 @@ public class Backtracking {
             distanceToRight = this.distanceToRight(pProcessingLine, upperPtrIndex);
             distanceToLeft = this.distanceToLeft(lowerPtrIndex);
             
-            ////Debug.Log("Upper: "+upperPtrIndex);
-            ////Debug.Log("Lower: "+lowerPtrIndex);
+            //Debug.Log("Upper: "+upperPtrIndex);
+            //Debug.Log("Lower: "+lowerPtrIndex);
 
             if (upperPtrIndex < pBlockIndex)
             {
@@ -271,13 +256,13 @@ public class Backtracking {
     private bool isValidRightDistance(int pDistanceToRight, int pNeededDistanceToRight)
     {
         //Debug.Log(pDistanceToRight);
-        //if(pDistanceToRight < pNeededDistanceToRight) //Debug.Log("Invalid right distance");
+        //if(pDistanceToRight < pNeededDistanceToRight) Debug.Log("Invalid right distance");
         return pDistanceToRight >= pNeededDistanceToRight;
     }
 
     private bool isValidLeftDistance(int pDistanceToLeft, int pNeededDistanceToLeft)
     {
-        //if(pDistanceToLeft < pNeededDistanceToLeft) //Debug.Log("Invalid left distance");
+        //if(pDistanceToLeft < pNeededDistanceToLeft) Debug.Log("Invalid left distance");
         return pDistanceToLeft >= pNeededDistanceToLeft;
     }
     
@@ -290,7 +275,6 @@ public class Backtracking {
             if (pLine.Cells[pUpperPtrIndex + 1].IsConfirmed)
             {
                 //Debug.Log(pUpperPtrIndex + 1);
-
                 //Debug.Log("Next cell marked");
             }
             return pLine.Cells[pUpperPtrIndex + 1].IsConfirmed;
@@ -359,6 +343,23 @@ public class Backtracking {
 
         result += "";
         return result;
+    }
+    
+    public bool IsSafeForTesting(Line testLine)
+    {
+        bool lineSafe = true;
+        _globalIndex = 0;
+        _clueIndex = 0;
+        
+        while (true)
+        {
+            _globalIndex = testLine.GetNextConfirmedBlockIndex(_globalIndex);
+            if (_globalIndex == -1) break; 
+            lineSafe = ValidBlock(_globalIndex, testLine);
+            if(!lineSafe) break;
+        }
+        //Debug.Log(lineSafe);
+        return lineSafe;
     }
     
 }

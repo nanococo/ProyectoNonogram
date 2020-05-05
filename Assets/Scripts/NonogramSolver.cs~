@@ -16,7 +16,7 @@ public class NonogramSolver : MonoBehaviour {
     void Start()
     {
 
-        TESTS tests = new TESTS();
+        //TESTS tests = new TESTS();
         
         CreateCluesMatrix();
         CreateLogicalMatrixRepresentation();

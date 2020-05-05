@@ -4,26 +4,25 @@ using UnityEngine;
 
 public class TESTS
 {
-    
-    private List<int> _testClues = new List<int> {1, 8, 2, 2};
+
+    private List<int> _testClues;
     private Line _testLine;
     private Backtracking backtracking;
     
     public TESTS()
     {
-        _testClues = new List<int> {1, 8, 2, 2};
-        _testLine = new Line(_testClues, 20, 7);
+        _testClues = new List<int> {2};
+        _testLine = new Line(_testClues, 5, 7);
         backtracking = new Backtracking();
         setTest();
         Debug.Log(backtracking.IsSafeForTesting(_testLine));
-        
     } 
 
     public void setTest()
     {
         //_testLine.Cells[0].Confirm();
         //_testLine.Cells[1].Confirm();
-        // _testLine.Cells[2].Confirm();
+        //_testLine.Cells[2].Confirm();
         //_testLine.Cells[3].Confirm();
         //_testLine.Cells[4].Confirm();
         //_testLine.Cells[5].Confirm();
@@ -42,12 +41,18 @@ public class TESTS
         //_testLine.Cells[18].Confirm();
         //_testLine.Cells[19].Confirm();
         
-        /* +  
         _testLine.Cells[0].Discard();
+        
+        _testLine.Cells[2].Confirm();
+        
+        _testLine.Cells[4].Discard();
+        
+        /* +  
+       
         _testLine.Cells[1].Discard();
         _testLine.Cells[2].Discard();
         _testLine.Cells[3].Discard();
-        _testLine.Cells[4].Discard();
+        
         _testLine.Cells[5].Discard();
         _testLine.Cells[6].Discard();
         _testLine.Cells[7].Discard();
