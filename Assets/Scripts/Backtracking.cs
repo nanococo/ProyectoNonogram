@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// The Backtracking class is the main handler for all
@@ -11,29 +12,26 @@ public class Backtracking {
     private readonly Matrix _matrix;
 
     public Backtracking(Matrix matrix) => _matrix = matrix;
+    
+    private readonly Stopwatch _stopWatch = new Stopwatch();
 
-    public Backtracking()
-    {
-    }
-
-    public bool ExecuteBacktracking() {
-
+    private bool ExecuteBacktracking() {
         for (var i = 0; i < _matrix.Rows.Count; i++) {
             if (!_matrix.Rows[i].IsCompleteBacktracking()) {
                 for (var j = 0; j < _matrix.Rows[i].Cells.Count; j++) {
                     if (!_matrix.Rows[i].Cells[j].DemonMark && !_matrix.Rows[i].Cells[j].IsConfirmed && !_matrix.Rows[i].Cells[j].IsDiscarded && IsSafe(i, j)) {
                         //_matrix.Rows[i].Cells[j].Mark = "1";
-                        _matrix.Rows[i].Cells[j].Confirm();
-                        _matrix.Columns[j].Cells[i].Confirm();
+                        _matrix.Rows[i].Cells[j].Confirm(true);
+                        _matrix.Columns[j].Cells[i].Confirm(false);
                         _matrix.RemoveDemonMarks();
                         if (ExecuteBacktracking()) {
                             return true;
                         } else {
                             //_matrix.Rows[i].Cells[j].Mark = "0";
                             _matrix.Rows[i].Cells[j].DemonMark=true;
-                            _matrix.Rows[i].Cells[j].DeConfirm();
+                            _matrix.Rows[i].Cells[j].DeConfirm(true);
                             _matrix.Columns[j].Cells[i].DemonMark=true;
-                            _matrix.Columns[j].Cells[i].DeConfirm();
+                            _matrix.Columns[j].Cells[i].DeConfirm(false);
                         }
                     }
                 }
@@ -63,17 +61,47 @@ public class Backtracking {
         }
 
         if (isComplete) {
-            Debug.Log(isComplete);
+            Debug.Log(true);
         }
         
         return isComplete;
     }
 
+
+    private bool IsSafe2(int rowIndex, int cellIndex) {
+        
+        //_matrix.Rows[rowIndex].Cells[cellIndex].Confirm();
+        //_matrix.Rows[rowIndex].Cells[cellIndex].Undo();
+        
+        
+        
+        var blocksOnLine = 0;
+        var blockCount = 0;
+        var blockCounting = false;
+        
+        for (var i = 0; i < _matrix.Rows[rowIndex].Cells.Count; i++) {
+            if (_matrix.Rows[rowIndex].Cells[i].IsConfirmed) {
+                blockCount++;
+            }
+            else if(blockCount>0) {
+                blockCount = 0;
+            }
+        }
+
+        return true;
+    }
+
+
+
+
+
+
     private int _clueIndex; //Global variable used in the is safe and valid lock methods.
     private int _globalIndex; //Global index used in the isSafe method chain.
-    
-    public bool IsSafe(int rowNumber, int cellNumber) {
-        
+
+    private bool IsSafe(int rowNumber, int cellNumber) {
+
+        var originalValue = _matrix.Rows[rowNumber].Cells[cellNumber].LogicalMatrix[rowNumber, cellNumber];
         var originalMark = _matrix.Rows[rowNumber].Cells[cellNumber].Mark;
         var originalIsConfirmed = _matrix.Rows[rowNumber].Cells[cellNumber].IsConfirmed;
         var originalIsDiscarded = _matrix.Rows[rowNumber].Cells[cellNumber].IsDiscarded;
@@ -81,39 +109,70 @@ public class Backtracking {
         var lineSafe = true;
 
         //------ROWS FIRST------//
-        
-        //Debug.Log("Row");
-        
-        //Debug.Log("RowIndex: "+rowNumber);
-        
+
         var processingLine = _matrix.Rows[rowNumber];
+
+        lineSafe = CheckLine(processingLine, cellNumber, true);
         
-        lineSafe = checkLine(processingLine, cellNumber);
-        
-        processingLine.Cells[cellNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded);
+        processingLine.Cells[cellNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded,true, originalValue);
        
         if (!lineSafe) return false;
         
         //------COLUMNS SECOND------//
-        
-        //Debug.Log("Collumn");
-        
-        //Debug.Log("CollumnIndex: "+cellNumber);
-        
+
         processingLine = _matrix.Columns[cellNumber];
         
-        lineSafe = checkLine(processingLine, rowNumber);
-        
-        processingLine.Cells[rowNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded);
+        lineSafe = CheckLine(processingLine, rowNumber, false);
+
+        processingLine.Cells[rowNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded, false, originalValue);
         
         return lineSafe;
     }
 
-    public bool checkLine(Line processingLine, int cellNumber)
-    {
+    private bool IsBasicSafe(int rowNumber, int cellNumber) {
+
+        bool retVal;
+        
+        var originalValue = _matrix.Rows[rowNumber].Cells[cellNumber].LogicalMatrix[rowNumber, cellNumber];
+        var originalMark = _matrix.Rows[rowNumber].Cells[cellNumber].Mark;
+        var originalIsConfirmed = _matrix.Rows[rowNumber].Cells[cellNumber].IsConfirmed;
+        var originalIsDiscarded = _matrix.Rows[rowNumber].Cells[cellNumber].IsDiscarded;
+        
+        var processingLine = _matrix.Rows[rowNumber];
+        processingLine.MarkCell(cellNumber, true);
+
+        retVal = processingLine.IsBasicSafe();
+        processingLine.Cells[cellNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded,true, originalValue);
+        
+        if (!retVal) return false;
+        
+        processingLine = _matrix.Columns[cellNumber];
+        retVal = processingLine.IsBasicSafe();
+        processingLine.Cells[rowNumber].Undo(originalMark, originalIsConfirmed, originalIsDiscarded, false, originalValue);
+        
+        
+        // var originalMark = _matrix.Rows[rowNumber].Cells[cellNumber].Mark;
+        // var originalMarkC = _matrix.Columns[cellNumber].Cells[rowNumber].Mark;
+        //
+        // var retVal = false;
+        //
+        // _matrix.Rows[rowNumber].Cells[cellNumber].Mark = "1";
+        // _matrix.Columns[cellNumber].Cells[rowNumber].Mark = "1";
+        //
+        // if (_matrix.Rows[rowNumber].IsBasicSafe() && _matrix.Columns[cellNumber].IsBasicSafe()) {
+        //     retVal = true;
+        // }
+        //
+        // _matrix.Rows[rowNumber].Cells[cellNumber].Mark = originalMark;
+        // _matrix.Columns[cellNumber].Cells[rowNumber].Mark = originalMarkC;
+
+        return retVal;
+    }
+
+    private bool CheckLine(Line processingLine, int rowNumber, bool doDraw){
         var lineSafe = true;
         
-        processingLine.MarkCell(cellNumber);
+        processingLine.MarkCell(rowNumber, doDraw);
         
         //Debug.Log(listToString(processingLine.Cells));
         
@@ -152,8 +211,8 @@ public class Backtracking {
     private bool TestBlockWithClue(int pBlockIndex, Line pProcessingLine)
     {
         
-        Debug.Log("Clue size: "+pProcessingLine.ClueValues.Count);
-        Debug.Log("Clue index: "+_clueIndex);
+        //Debug.Log("Clue size: "+pProcessingLine.ClueValues.Count);
+        //Debug.Log("Clue index: "+_clueIndex);
         if (pProcessingLine.CountConfirmedBlockSize(pBlockIndex) > pProcessingLine.ClueValues[_clueIndex])
         {
             //Debug.Log(pBlockIndex);
@@ -164,14 +223,14 @@ public class Backtracking {
             return false;
         }
        
-        int upperPtrIndex = setUpperIndex(pBlockIndex, pProcessingLine);
-        int lowerPtrIndex = setLowerIndex(pProcessingLine, upperPtrIndex, pBlockIndex);
+        int upperPtrIndex = SetUpperIndex(pBlockIndex, pProcessingLine);
+        int lowerPtrIndex = SetLowerIndex(pProcessingLine, upperPtrIndex, pBlockIndex);
         
         
 
         if (!wasTooSmallSpace(lowerPtrIndex, upperPtrIndex, pProcessingLine))
         {
-            return canEquilibrate(pBlockIndex, upperPtrIndex, lowerPtrIndex, pProcessingLine);
+            return CanEquilibrate(pBlockIndex, upperPtrIndex, lowerPtrIndex, pProcessingLine);
         }
 
         return false;
@@ -195,11 +254,11 @@ public class Backtracking {
         return false;
     }
     
-    private bool canEquilibrate(int pBlockIndex, int upperPtrIndex, int lowerPtrIndex, Line pProcessingLine)
+    private bool CanEquilibrate(int pBlockIndex, int upperPtrIndex, int lowerPtrIndex, Line pProcessingLine)
     {
         
-        int neededDistanceToRight = getNeededDistanceToRight(pProcessingLine.ClueValues);
-        int neededDistanceToLeft = getNeededDistanceToLeft(pProcessingLine.ClueValues);
+        int neededDistanceToRight = GetNeededDistanceToRight(pProcessingLine.ClueValues);
+        int neededDistanceToLeft = GetNeededDistanceToLeft(pProcessingLine.ClueValues);
 
         int distanceToRight = this.distanceToRight(pProcessingLine, upperPtrIndex);
         int distanceToLeft = this.distanceToLeft(lowerPtrIndex);
@@ -207,11 +266,11 @@ public class Backtracking {
         //Debug.Log("Upper: "+upperPtrIndex);
         //Debug.Log("Lower: "+lowerPtrIndex);
         
-        while (nextCellMarked(upperPtrIndex, pProcessingLine) ||
-               !isValidLeftDistance(distanceToLeft, neededDistanceToLeft) ||
-               !isValidRightDistance(distanceToRight, neededDistanceToRight))
+        while (NextCellMarked(upperPtrIndex, pProcessingLine) ||
+               !IsValidLeftDistance(distanceToLeft, neededDistanceToLeft) ||
+               !IsValidRightDistance(distanceToRight, neededDistanceToRight))
         {
-            if (!canMoveBackwards(lowerPtrIndex, pProcessingLine))
+            if (!CanMoveBackwards(lowerPtrIndex, pProcessingLine))
             {
                 //Debug.Log("Couldn't equilibrate");
                 return false;
@@ -237,10 +296,10 @@ public class Backtracking {
         return true;
     }
 
-    private int setUpperIndex(int pBlockIndex, Line pProcessingLine)
+    private int SetUpperIndex(int pBlockIndex, Line pProcessingLine)
     {
-        int blockSize = pProcessingLine.CountConfirmedBlockSize(pBlockIndex);
-        int upperIndex = pBlockIndex + blockSize;
+        var blockSize = pProcessingLine.CountConfirmedBlockSize(pBlockIndex);
+        var upperIndex = pBlockIndex + blockSize;
         
         try
         {
@@ -260,32 +319,32 @@ public class Backtracking {
         
     }
 
-    private int setLowerIndex(Line pProcessingLine, int pUpperIndex, int pBlockIndex)
+    private int SetLowerIndex(Line pProcessingLine, int pUpperIndex, int pBlockIndex)
     {
-        int indexesDistance = pUpperIndex - pBlockIndex + 1;
-        int cellsToMove = pProcessingLine.ClueValues[_clueIndex] - indexesDistance;
+        var indexesDistance = pUpperIndex - pBlockIndex + 1;
+        var cellsToMove = pProcessingLine.ClueValues[_clueIndex] - indexesDistance;
         
-        Debug.Log(pBlockIndex);
-        Debug.Log(cellsToMove);
+        //Debug.Log(pBlockIndex);
+        //Debug.Log(cellsToMove);
         
         return pBlockIndex - cellsToMove;
     }
 
-    private bool isValidRightDistance(int pDistanceToRight, int pNeededDistanceToRight)
+    private static bool IsValidRightDistance(int pDistanceToRight, int pNeededDistanceToRight)
     {
         //Debug.Log(pDistanceToRight);
         //if(pDistanceToRight < pNeededDistanceToRight) Debug.Log("Invalid right distance");
         return pDistanceToRight >= pNeededDistanceToRight;
     }
 
-    private bool isValidLeftDistance(int pDistanceToLeft, int pNeededDistanceToLeft)
+    private static bool IsValidLeftDistance(int pDistanceToLeft, int pNeededDistanceToLeft)
     {
         //if(pDistanceToLeft < pNeededDistanceToLeft) Debug.Log("Invalid left distance");
         return pDistanceToLeft >= pNeededDistanceToLeft;
     }
     
 
-    private bool nextCellMarked(int pUpperPtrIndex, Line pLine)
+    private static bool NextCellMarked(int pUpperPtrIndex, Line pLine)
     {
         try
         {
@@ -303,7 +362,7 @@ public class Backtracking {
         }
     }
 
-    private bool canMoveBackwards(int pLowerPtrIndex, Line pLine)
+    private static bool CanMoveBackwards(int pLowerPtrIndex, Line pLine)
     {
         try
         {
@@ -316,10 +375,10 @@ public class Backtracking {
         }
     }
     
-    private int getNeededDistanceToRight(List<int> pClueValues)
+    private int GetNeededDistanceToRight(List<int> pClueValues)
     {
-        int index = _clueIndex + 1;
-        int neededDistance = 0;
+        var index = _clueIndex + 1;
+        var neededDistance = 0;
         while (index < pClueValues.Count)
         {
             neededDistance += 1 + pClueValues[index];
@@ -328,10 +387,10 @@ public class Backtracking {
         return neededDistance;
     }
     
-    private int getNeededDistanceToLeft(List<int> pClueValues)
+    private int GetNeededDistanceToLeft(List<int> pClueValues)
     {
-        int index = _clueIndex - 1;
-        int neededDistance = 0;
+        var index = _clueIndex - 1;
+        var neededDistance = 0;
         while (index >= 0)
         {
             neededDistance += 1 + pClueValues[index];
@@ -365,7 +424,7 @@ public class Backtracking {
     
     public bool IsSafeForTesting(Line testLine)
     {
-        bool lineSafe = true;
+        var lineSafe = true;
         _globalIndex = 0;
         _clueIndex = 0;
         
@@ -379,5 +438,16 @@ public class Backtracking {
         //Debug.Log(lineSafe);
         return lineSafe;
     }
-    
+
+    public void StartBacktracking() {
+        _stopWatch.Start();
+        Debug.Log(ExecuteBacktracking());
+        _stopWatch.Stop();
+        var ts = _stopWatch.Elapsed;
+        Debug.Log((float) ts.TotalMinutes);
+        
+        Debug.Log("-----------------------------------------------");
+        Debug.Log("Rows");
+        Debug.Log(_matrix.listToString(_matrix.Rows));
+    }
 }

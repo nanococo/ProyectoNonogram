@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 public class Matrix 
@@ -14,11 +13,15 @@ public class Matrix
     public List<Line> Columns { get; }
 
     private bool _changeFlag;
+    private int[,] _LogicalMatrix;
+
+    private Visuals.Board _board;
     
-    private Stopwatch stopWatch = new Stopwatch();
     
-    public Matrix(List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength)
-    {
+    
+    public Matrix(List<List<int>> pRowClues, List<List<int>> pColumnClues, int pHeight, int pLength, Visuals.Board board, int[,] logicalMatrix) {
+        
+        _board = board;
 
         _changeFlag = false;
 
@@ -31,71 +34,42 @@ public class Matrix
         _height = pHeight;
         _length = pLength;
 
+        _LogicalMatrix = logicalMatrix;
+        
         CreateRows();
         CreateColumns();
-        
-        Test();
-
-        
     }
 
-    private void Test()
-    {
-        SolveMatrix();
-        
-        //Debug.Log(Rows[1].Cells[1].Mark);
-
-        stopWatch.Start();
-        var backtracking = new Backtracking(this);
-        backtracking.ExecuteBacktracking();
-        stopWatch.Stop();
-        System.TimeSpan ts = stopWatch.Elapsed;
-        
-        Debug.Log("ROWS");
-        Debug.Log(listToString(Rows));
-        Debug.Log("ROWS");
-        
-        Debug.Log((float) ts.TotalMinutes);
-        // Debug.Log("-----------------------------------------------");
-        // Debug.Log("COLUMNS");
-        // Debug.Log(listToString(Columns));
-        // Debug.Log("COLUMNS");
-        
-        
-    }
-    
-    
     private void CreateRows()
     {
-        for (int index = 0; index < _length; index++)
+        for (var rowNumber = 0; rowNumber < _height; rowNumber++)
         {
-            Rows.Add(CreateRow(index));
+            Rows.Add(CreateRow(rowNumber));
         }
         
     }
 
-    private Line CreateRow(int index)
+    private Line CreateRow(int rowNumber)
     {
-        return new Line(RowClues[index], _height, index);
+        return new Line(RowClues[rowNumber], _length, rowNumber, _board, _LogicalMatrix);
     }
 
-    private void CreateColumns()
-    {
-        for (int index = 0; index < _height; index++)
+    private void CreateColumns() {
+        for (var columnNumber = 0; columnNumber < _length; columnNumber++)
         {
-            Columns.Add(CreateColumn(index));
+            Columns.Add(CreateColumn(columnNumber));
         }
 
     }
 
     private Line CreateColumn(int index)
     {
-        return new Line(ColumnClues[index], _length, index);
+        return new Line(ColumnClues[index], _height, index, _board, _LogicalMatrix);
     }
 
-    private void SolveMatrix()
+    public void SolveMatrix()
     {
-        int counter = 0;
+        var counter = 0;
         do
         {
             ResetThisChangeFlag();
@@ -118,7 +92,7 @@ public class Matrix
     {
         foreach (var row in Rows)
         {
-            row.AnalyzeLine();
+            row.AnalyzeLine(true);
             if (row.WasChanged()) _changeFlag = true;
             UpdateColumns(row);
         }
@@ -128,7 +102,7 @@ public class Matrix
     {
         foreach (var column in Columns)
         {
-            column.AnalyzeLine();
+            column.AnalyzeLine(false);
             if (column.WasChanged()) _changeFlag = true;
             UpdateRows(column);
         }
@@ -144,13 +118,12 @@ public class Matrix
     }
     private void UpdateRows(Line column)
     {
-        foreach (var row in Rows)
-        {
+        foreach (var row in Rows) {
             row.Refresh(column);
         }
     }
 
-    private void ResetLinesChangeFlags(List<Line> pLineList)
+    private static void ResetLinesChangeFlags(List<Line> pLineList)
     {
         foreach (var line in pLineList)
         {
@@ -158,9 +131,8 @@ public class Matrix
         }
     }
 
-    private void ResetThisChangeFlag()
-    {
-        this._changeFlag = false;
+    private void ResetThisChangeFlag() {
+        _changeFlag = false;
     }
     
 
@@ -199,5 +171,9 @@ public class Matrix
                 rowCell.DemonMark = false;
             }
         }
+    }
+
+    public void ExecuteBackTracking() {
+        
     }
 }

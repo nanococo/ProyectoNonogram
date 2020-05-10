@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.UIElements;
+using Visuals;
 
 public class Line
 {
-    public int Index { get; }
+    public int RowNumber { get; }
     public List<Cell> Cells { get; private set; }
 
     public int Length { get; }
     public List<int> ClueValues { get; }
 
-    public int GreaterClueValue { get; private set; }
+    public int GreaterClueValue { get; set; }
     public List<int> SortedClueValues { get; }
 
     private bool _changeFlag;
 
-    public int AdditionOfClues { get; set; }
+    private Board _board;
+    private int[,] _LogicalMatrix;
 
-    public bool IsCompleted { get; set; }
 
-    public Line(List<int> clues, int length, int index)
-    {
+    public Line(List<int> clues, int length, int rowNumber, Board board, int[,] logicalMatrix) {
+        _board = board;
+        
         _changeFlag = false;
         
         ClueValues = clues;
@@ -30,7 +31,9 @@ public class Line
         SortedClueValues = ClueValues.ToList();
         
         Length = length;
-        Index = index;
+        RowNumber = rowNumber;
+
+        _LogicalMatrix = logicalMatrix;
         
         CreateCellList();
         
@@ -43,36 +46,35 @@ public class Line
     private void CreateCellList()
     {
         Cells = new List<Cell>();
-        for (int counter = 0; counter < Length; counter++)
-        {
-            Cell newCell = CreateCell(Index, counter);
+        for (var counter = 0; counter < Length; counter++) {
+            var newCell = CreateCell(RowNumber, counter);
             Cells.Add(newCell);
         }
     }
 
-    private static Cell CreateCell(int xIndex, int yIndex)
+    private Cell CreateCell(int xIndex, int yIndex)
     {
-        return new Cell(xIndex, yIndex);
+        return new Cell(xIndex, yIndex, _LogicalMatrix);
     }
 
     public void Refresh(Line changes) 
     {
-        Cells[changes.Index].UpdateWithOuterChanges(changes.Cells[Index]);
+        Cells[changes.RowNumber].UpdateWithOuterChanges(changes.Cells[RowNumber]);
     }
     
-    public void AnalyzeLine()
+    public void AnalyzeLine(bool doDraw)
     {
-        if (ClueValues[0] == 0) discardLeftSpaces();
+        if (ClueValues[0] == 0) DiscardLeftSpaces(doDraw);
         else
         {
-            DiscardCells();
-            MarkCells();
+            DiscardCells(doDraw);
+            MarkCells(doDraw);
 
         }
         
     }
     
-    private void MarkCells()
+    private void MarkCells(bool doDraw)
     {
         int index = 0;
         int finalIndex = Length - 1;
@@ -83,7 +85,7 @@ public class Line
             finalIndex = index + size - 1;
         }
         Cells = MathematicalApproach.MathematicalApproachMethod(ClueValues, index, finalIndex, 
-            0, ClueValues.Count - 1, this);  
+            0, ClueValues.Count - 1, this, doDraw);  
         
     }
 
@@ -101,15 +103,15 @@ public class Line
         return true;
     }
 
-    private void DiscardCells()
+    private void DiscardCells(bool doDraw)
     {
-        DiscardIsolatedSpaces();
-        SurroundCompletedClue();
-        if (IsComplete()) discardLeftSpaces();
-        if (ClueValues.Count == 1) DiscardUnreachableSpaces();
+        DiscardIsolatedSpaces(doDraw);
+        SurroundCompletedClue(doDraw);
+        if (IsComplete()) DiscardLeftSpaces(doDraw);
+        if (ClueValues.Count == 1) DiscardUnreachableSpaces(doDraw);
     }
     
-    private void DiscardUnreachableSpaces()
+    private void DiscardUnreachableSpaces(bool doDraw)
     {
         
         int index = GetNextConfirmedBlockIndex(0);
@@ -117,15 +119,15 @@ public class Line
         {
             int blockSize = CountConfirmedBlockSize(index);
         
-            DiscardToLeft(index, blockSize);
+            DiscardToLeft(index, blockSize, doDraw);
         
             index += blockSize;
         
-            DiscardToRight(index, blockSize);
+            DiscardToRight(index, blockSize, doDraw);
         }
     }
 
-    private void DiscardIsolatedSpaces()
+    private void DiscardIsolatedSpaces(bool doDraw)
     {
         int index = 0;
         int size;
@@ -138,8 +140,8 @@ public class Line
             
             if (IsAnEmptySpace(index))
             {
-                if (SortedClueValues.Count == 0) DiscardIsolatedSpace(index, size);
-                else if (size < SortedClueValues[0]) DiscardIsolatedSpace(index, size);
+                if (SortedClueValues.Count == 0) DiscardIsolatedSpace(index, size, doDraw);
+                else if (size < SortedClueValues[0]) DiscardIsolatedSpace(index, size, doDraw);
             }
 
             index += size;
@@ -171,7 +173,6 @@ public class Line
         }
 
         if (lineComplete) {
-            IsCompleted = true;
         }
 
         return lineComplete;
@@ -199,7 +200,7 @@ public class Line
     }
 
     //Auxiliary Methods
-    private void DiscardToLeft(int pIndex, int pBlockSize) 
+    private void DiscardToLeft(int pIndex, int pBlockSize, bool doDraw) 
     
     {
 
@@ -209,7 +210,7 @@ public class Line
 
         while (pIndex >= 0)
         {
-            DiscardCell(pIndex);
+            DiscardCell(pIndex, doDraw);
             
             pIndex--;
             
@@ -217,7 +218,7 @@ public class Line
 
     }
     
-    private void DiscardToRight(int pIndex, int pBlockSize)
+    private void DiscardToRight(int pIndex, int pBlockSize, bool doDraw)
     {
         
         int maxReach = ClueValues[ClueValues.Count-1] - pBlockSize;
@@ -225,17 +226,17 @@ public class Line
 
         while (pIndex < Length )
         {
-            DiscardCell(pIndex);
+            DiscardCell(pIndex, doDraw);
             pIndex++;
         }
         
     }
 
-    private void MarkCellFromIndex(int pIndex, int pQuantity, bool toLeft)
+    private void MarkCellFromIndex(int pIndex, int pQuantity, bool toLeft, bool doDraw)
     { 
         while (pQuantity > 0)
         {
-            Cells[pIndex].Confirm();
+            Cells[pIndex].Confirm(doDraw);
             if (toLeft) pIndex--;
             else pIndex++;
             pQuantity--;
@@ -305,13 +306,13 @@ public class Line
         
     }
     
-    private void DiscardIsolatedSpace(int pBlockIndex, int pSize)
+    private void DiscardIsolatedSpace(int pBlockIndex, int pSize, bool doDraw)
     {
 
         int finalIndex = pBlockIndex + pSize;
         while (pBlockIndex < finalIndex)
         {
-            DiscardCell(pBlockIndex);
+            DiscardCell(pBlockIndex, doDraw);
             pBlockIndex++;
         }
 
@@ -346,19 +347,19 @@ public class Line
         return nextConfirmedBlockIndex;
     }
 
-    private void discardLeftSpaces()
+    private void DiscardLeftSpaces(bool doDraw)
     {
         foreach (Cell cell in Cells)
         {
             if (!cell.IsConfirmed && !cell.IsDiscarded)
             {
-                cell.Discard();
+                cell.Discard(doDraw);
                 SetChangeFlag(true);
             }
         }
     }
 
-    private void SurroundCompletedClue()
+    private void SurroundCompletedClue(bool doDraw)
     {
         int index = 0;
         int size;
@@ -370,7 +371,7 @@ public class Line
             if (size == GreaterClueValue && !IsAlreadySurrounded(index-1, size))
             {
                 
-                DiscardBlockBoundaries(index-1, size);
+                DiscardBlockBoundaries(index-1, size, doDraw);
                 SortedClueValues.RemoveAt(SortedClueValues.Count-1);
                 SetGreaterClue();
             }
@@ -380,11 +381,11 @@ public class Line
       
     }
 
-    private void DiscardBlockBoundaries(int pIndex, int pSize)
+    private void DiscardBlockBoundaries(int pIndex, int pSize, bool doDraw)
     {
         try
         {
-            DiscardCell(pIndex);
+            DiscardCell(pIndex, doDraw);
         }
         catch (ArgumentOutOfRangeException outOfRangeException)
         {}
@@ -392,7 +393,7 @@ public class Line
         try
         {
             pIndex += pSize + 1;
-            DiscardCell(pIndex);
+            DiscardCell(pIndex, doDraw);
         } 
         catch (ArgumentOutOfRangeException outOfRangeException)
         {}
@@ -443,20 +444,20 @@ public class Line
 
      
 
-    public void MarkCell(int pIndex)
+    public void MarkCell(int pIndex, bool doDraw)
     {
         if (!Cells[pIndex].IsConfirmed)
         {
-            Cells[pIndex].Confirm();
+            Cells[pIndex].Confirm(doDraw);
             SetChangeFlag(true);
         }
     }
     
-    public void DiscardCell(int pIndex)
+    public void DiscardCell(int pIndex, bool doDraw)
     {
         if (!Cells[pIndex].IsDiscarded)
         {
-            Cells[pIndex].Discard();
+            Cells[pIndex].Discard(doDraw);
             SetChangeFlag(true);
         }
     }
@@ -502,5 +503,37 @@ public class Line
     }
 
 
+    public bool IsBasicSafe() {
+        var block = false;
+        var totalCluesFound = 0;
+        var blockSize = 0;
+        var cluesValueAddition = ClueValues.Sum();
+
+        foreach (var cell in Cells) {
+            if (cell.Mark == "1") {
+                block = true;
+                totalCluesFound++;
+                blockSize++;    
+                
+            } else if (block) {
+                if (blockSize>GreaterClueValue) {
+                    return false;
+                }
+
+                blockSize = 0;
+                block = false;
+            }
+        }
+        if (blockSize>GreaterClueValue) {
+            return false;
+        }
+
+        if (totalCluesFound > cluesValueAddition) {
+            return false;
+        }
+
+        return true;
+
+    }
 }
 

@@ -4,7 +4,7 @@ public static class MathematicalApproach
 {
 
     public static List<Cell> MathematicalApproachMethod(List<int> pClueValues, int pListStartIndex, int pListEndIndex,
-        int pClueStartIndex, int pClueEndIndex, Line pLine)
+        int pClueStartIndex, int pClueEndIndex, Line pLine, bool doDraw)
     {
         int size = pListEndIndex - pListStartIndex + 1;
         int clueSpanning = GetCluesSpanning(pClueValues, pClueStartIndex, pClueEndIndex);
@@ -15,7 +15,7 @@ public static class MathematicalApproach
 
             int quantity = pClueValues[pClueStartIndex] - markDeterminator;
             pListStartIndex += pClueValues[pClueStartIndex] - 1;
-            pLine = BackMarkCells(pListStartIndex, quantity, pLine);
+            pLine = BackMarkCells(pListStartIndex, quantity, pLine, doDraw);
 
             pClueStartIndex++;
             pListStartIndex += 2;
@@ -27,7 +27,7 @@ public static class MathematicalApproach
 
     
     //Backmarks the number of cells indicated in the 
-    private static Line BackMarkCells(int pIndex, int pQuantity, Line pLine)
+    private static Line BackMarkCells(int pIndex, int pQuantity, Line pLine, bool doDraw)
     {
         int internalIndex = pIndex;
         int markedCells = 0;
@@ -36,7 +36,7 @@ public static class MathematicalApproach
         
         while (markedCells != pQuantity)
         {
-            pLine.MarkCell(internalIndex);
+            pLine.MarkCell(internalIndex, doDraw);
             markedCells += 1;
             
             internalIndex -= 1;
