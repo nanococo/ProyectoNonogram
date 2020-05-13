@@ -19,7 +19,6 @@ public class NonogramSolver : MonoBehaviour {
     void Start() {
         
         
-        
         InitializeNonogram();
         InitializeLogicalMatrix();
         
@@ -37,17 +36,24 @@ public class NonogramSolver : MonoBehaviour {
         Debug.Log("-----------------------------------------------");
         Debug.Log("Rows");
         Debug.Log(matrix.listToString(matrix.Rows));
-
+        
         //Start Backtracking Thread
-        var backtracking = new Backtracking(matrix);
+        var backtracking = new Backtracking(matrix, LogicalMatrix);
         var thr = new Thread(backtracking.StartBacktracking);
         thr.Start();
         thr.IsBackground = true;
     }
 
     private void TestLine() {
-        var testClues = new List<int> {3, 4};
-        var line = new Line(testClues, 10, 0, board, LogicalMatrix) {GreaterClueValue = 4};
+        // var testClues = new List<int> {3, 4};
+        // var line = new Line(testClues, 10, 0, board, LogicalMatrix) {GreaterClueValue = 4};
+        var testTuples = new List<(int, int)> {(0,0), (0,1), (0,3), (1,1), (1,3)};
+        testTuples.Sort();
+        var res = "";
+        foreach (var valueTuple in testTuples) {
+            res += valueTuple + ",";
+        }
+        Debug.Log(res);
     }
 
     private void Update() {
