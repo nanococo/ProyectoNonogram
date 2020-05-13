@@ -10,35 +10,60 @@ using Debug = UnityEngine.Debug;
 public class Backtracking {
 
     private readonly Matrix _matrix;
+    private readonly int[,] _logicalMatrix;
 
-    public Backtracking(Matrix matrix) => _matrix = matrix;
+    public Backtracking(Matrix matrix, int[,] logicalMatrix) {
+        _matrix = matrix;
+        _logicalMatrix = logicalMatrix;
+    }
     
     private readonly Stopwatch _stopWatch = new Stopwatch();
+
+    private List<(int, int)> currentCombination = new List<(int, int)>();
+    Dictionary<string, bool> combinations = new Dictionary<string, bool>();
 
     private bool ExecuteBacktracking() {
         for (var i = 0; i < _matrix.Rows.Count; i++) {
             if (!_matrix.Rows[i].IsCompleteBacktracking()) {
                 for (var j = 0; j < _matrix.Rows[i].Cells.Count; j++) {
-                    if (!_matrix.Rows[i].Cells[j].DemonMark && !_matrix.Rows[i].Cells[j].IsConfirmed && !_matrix.Rows[i].Cells[j].IsDiscarded && IsSafe(i, j)) {
-                        //_matrix.Rows[i].Cells[j].Mark = "1";
-                        _matrix.Rows[i].Cells[j].Confirm(true);
-                        _matrix.Columns[j].Cells[i].Confirm(false);
-                        _matrix.RemoveDemonMarks();
-                        if (ExecuteBacktracking()) {
-                            return true;
-                        } else {
-                            //_matrix.Rows[i].Cells[j].Mark = "0";
-                            _matrix.Rows[i].Cells[j].DemonMark=true;
-                            _matrix.Rows[i].Cells[j].DeConfirm(true);
-                            _matrix.Columns[j].Cells[i].DemonMark=true;
-                            _matrix.Columns[j].Cells[i].DeConfirm(false);
+                    if (!_matrix.Rows[i].Cells[j].IsConfirmed && !_matrix.Rows[i].Cells[j].IsDiscarded && IsSafe(i, j)) {
+                        var attempt = (i, j);
+                        currentCombination.Add(attempt);
+                        
+                        if (!combinations.ContainsKey(GetHashMapKey())) {
+                            
+                            _matrix.Rows[i].Cells[j].Confirm(true);
+                            _matrix.Columns[j].Cells[i].Confirm(false);
+                            
+                            if (ExecuteBacktracking()) {
+                                return true;
+                            } else {
+                                _matrix.Rows[i].Cells[j].DeConfirm(true);
+                                _matrix.Columns[j].Cells[i].DeConfirm(false);
+                                combinations.Add(GetHashMapKey(), true);
+                                currentCombination.Remove(attempt);
+                            }    
+                        }
+                        else {
+                            currentCombination.Remove(attempt);
                         }
                     }
                 }
+                if (!_matrix.Rows[i].IsCompleteBacktracking()) {
+                    return false;
+                }
             }
         }
-
         return IsFinished();
+    }
+
+    private string GetHashMapKey() {
+        var returnKey = "";
+        currentCombination.Sort();
+        foreach (var tuple in currentCombination) {
+            returnKey += tuple.Item1.ToString() + tuple.Item2;
+        }
+        return returnKey;
     }
 
     private bool IsFinished() {
@@ -66,36 +91,7 @@ public class Backtracking {
         
         return isComplete;
     }
-
-
-    private bool IsSafe2(int rowIndex, int cellIndex) {
-        
-        //_matrix.Rows[rowIndex].Cells[cellIndex].Confirm();
-        //_matrix.Rows[rowIndex].Cells[cellIndex].Undo();
-        
-        
-        
-        var blocksOnLine = 0;
-        var blockCount = 0;
-        var blockCounting = false;
-        
-        for (var i = 0; i < _matrix.Rows[rowIndex].Cells.Count; i++) {
-            if (_matrix.Rows[rowIndex].Cells[i].IsConfirmed) {
-                blockCount++;
-            }
-            else if(blockCount>0) {
-                blockCount = 0;
-            }
-        }
-
-        return true;
-    }
-
-
-
-
-
-
+    
     private int _clueIndex; //Global variable used in the is safe and valid lock methods.
     private int _globalIndex; //Global index used in the isSafe method chain.
 
@@ -449,5 +445,22 @@ public class Backtracking {
         Debug.Log("-----------------------------------------------");
         Debug.Log("Rows");
         Debug.Log(_matrix.listToString(_matrix.Rows));
+        
+        for (var i = 0; i <= _logicalMatrix.GetUpperBound(0); i++) {
+            for (var j = 0; j <= _logicalMatrix.GetUpperBound(1); j++) {
+                switch (_matrix.Rows[i].Cells[j].Mark) {
+                    case "1":
+                        _logicalMatrix[i, j] = 2;
+                        break;
+                    case "0":
+                        _logicalMatrix[i, j] = 1;
+                        break;
+                    case "x":
+                        _logicalMatrix[i, j] = 3;
+                        break;
+                }
+            }
+        }
+        Debug.Log(combinations.Count);
     }
 }
