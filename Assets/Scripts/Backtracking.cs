@@ -11,13 +11,12 @@ public class Backtracking {
 
     private readonly Matrix _matrix;
     private readonly int[,] _logicalMatrix;
+    public bool IsFinishedResult { get; set; }
 
     public Backtracking(Matrix matrix, int[,] logicalMatrix) {
         _matrix = matrix;
         _logicalMatrix = logicalMatrix;
     }
-    
-    private readonly Stopwatch _stopWatch = new Stopwatch();
 
     private List<(int, int)> currentCombination = new List<(int, int)>();
     Dictionary<string, bool> combinations = new Dictionary<string, bool>();
@@ -438,12 +437,8 @@ public class Backtracking {
     }
 
     public void StartBacktracking() {
-        _stopWatch.Start();
-        Debug.Log(ExecuteBacktracking());
-        _stopWatch.Stop();
-        var ts = _stopWatch.Elapsed;
-        Debug.Log((float) ts.TotalMinutes);
-        
+        IsFinishedResult = ExecuteBacktracking();
+        Debug.Log(IsFinishedResult);
         Debug.Log("-----------------------------------------------");
         Debug.Log("Rows");
         Debug.Log(_matrix.listToString(_matrix.Rows));

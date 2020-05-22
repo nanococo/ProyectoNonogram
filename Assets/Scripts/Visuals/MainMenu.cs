@@ -14,6 +14,8 @@ public class MainMenu : MonoBehaviour
     public static bool showAnimation;
 
     public static string puzzlePath = Path.GetFullPath(@"Assets/Scripts/Puzzles/5x5_45.txt");
+
+    public GameObject ShowAnimationGameObject;
     
     
     public void SolveNonogram()
@@ -29,11 +31,13 @@ public class MainMenu : MonoBehaviour
     
     public void ToggleValueChanged(bool change)
     {
-        showAnimation = change;
+        showAnimation = ShowAnimationGameObject.GetComponent<Toggle>().isOn;
+        Debug.Log(showAnimation);
     }
 
-    public void selectPuzzleFile()
-    {
+    public void selectPuzzleFile() {
+        //showAnimation = false;
+        //ShowAnimationGameObject.GetComponent<Toggle>().isOn = false;
         string path = EditorUtility.OpenFilePanel(
             "Select a puzzle to solve",
             Path.GetFullPath(@"Assets/Scripts/Puzzles"), 

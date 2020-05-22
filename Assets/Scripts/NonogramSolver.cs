@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class NonogramSolver : MonoBehaviour {
     private int _height;
@@ -17,10 +17,13 @@ public class NonogramSolver : MonoBehaviour {
     public Matrix matrix;
     private Thread _thr;
 
+    public GameObject timeTextObject;
+    public bool isFinished;
+    private Backtracking _backtracking;
+
     // Start is called before the first frame update
     void Start() {
-        
-        
+
         InitializeNonogram();
         InitializeLogicalMatrix();
         
@@ -40,8 +43,8 @@ public class NonogramSolver : MonoBehaviour {
         Debug.Log(matrix.listToString(matrix.Rows));
         
         //Start Backtracking Thread
-        var backtracking = new Backtracking(matrix, LogicalMatrix);
-        _thr = new Thread(backtracking.StartBacktracking);
+        _backtracking = new Backtracking(matrix, LogicalMatrix);
+        _thr = new Thread(_backtracking.StartBacktracking);
         _thr.Start();
         _thr.IsBackground = true;
     }
@@ -59,12 +62,11 @@ public class NonogramSolver : MonoBehaviour {
     }
 
     private void Update() {
-        
         if (MainMenu.showAnimation)
         {
             board.UpdateCells(_height, _length);
         }
-       
+        isFinished = _backtracking.IsFinishedResult;
     }
 
     private void OnDestroy() {
