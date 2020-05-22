@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Visuals;
 
 public class Line
@@ -261,6 +262,8 @@ public class Line
 
     private int CountIsolatedBlockSize(int pBlockIndex)
     {
+
+        //Debug.Log(pBlockIndex);
         
         int size = 0;
         int internalIndex = pBlockIndex;

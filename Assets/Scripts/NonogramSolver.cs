@@ -57,7 +57,12 @@ public class NonogramSolver : MonoBehaviour {
     }
 
     private void Update() {
-        board.UpdateCells(_height, _length);
+        
+        if (MainMenu.showAnimation)
+        {
+            board.UpdateCells(_height, _length);
+        }
+       
     }
 
     private void InitializeLogicalMatrix() {
@@ -74,7 +79,7 @@ public class NonogramSolver : MonoBehaviour {
     
 
     private void InitializeNonogram() {
-        var lines = System.IO.File.ReadAllLines(@"Assets\Scripts\input4.txt");
+        var lines = System.IO.File.ReadAllLines(MainMenu.puzzlePath);
         var rows = true;
         foreach (var line in lines) {
             if (!_skip) {

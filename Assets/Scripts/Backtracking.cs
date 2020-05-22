@@ -23,6 +23,7 @@ public class Backtracking {
     Dictionary<string, bool> combinations = new Dictionary<string, bool>();
 
     private bool ExecuteBacktracking() {
+        // Debug.Log(_matrix.ToString());
         for (var i = 0; i < _matrix.Rows.Count; i++) {
             if (!_matrix.Rows[i].IsCompleteBacktracking()) {
                 for (var j = 0; j < _matrix.Rows[i].Cells.Count; j++) {
@@ -88,7 +89,8 @@ public class Backtracking {
         if (isComplete) {
             Debug.Log(true);
         }
-        
+
+        if (isComplete) MainMenu.showAnimation = true;
         return isComplete;
     }
     

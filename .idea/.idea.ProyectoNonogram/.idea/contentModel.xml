@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\GitHub_Projects\ProyectoNonogram" t="IncludeRecursive">
+    <e p="C:\Users\jguty\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\jguty\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_ProyectoNonogram.-2076553951.00" t="ExcludeRecursive" />
+    <e p="C:\Users\jguty\OneDrive\Documents\GitHub\ProyectoNonogram" t="IncludeRecursive">
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="EZThread" t="Include">
@@ -10,45 +12,120 @@
           <e p="Readme.txt" t="Include" />
         </e>
         <e p="Scripts" t="Include">
-          <e p="10x10_45.txt" t="Include" />
-          <e p="10x10_45_tablero.txt" t="Include" />
-          <e p="10x10_55.txt" t="Include" />
-          <e p="10x10_55_tablero.txt" t="Include" />
-          <e p="10x10_65.txt" t="Include" />
-          <e p="10x10_65_tablero.txt" t="Include" />
-          <e p="15x15_45.txt" t="Include" />
-          <e p="15x15_45_tablero.txt" t="Include" />
-          <e p="15x15_55.txt" t="Include" />
-          <e p="15x15_55_tablero.txt" t="Include" />
-          <e p="15x15_65.txt" t="Include" />
-          <e p="15x15_65_tablero.txt" t="Include" />
-          <e p="20x20_45.txt" t="Include" />
-          <e p="20x20_45_tablero.txt" t="Include" />
-          <e p="20x20_55.txt" t="Include" />
-          <e p="20x20_55_tablero.txt" t="Include" />
-          <e p="20x20_65.txt" t="Include" />
-          <e p="20x20_65_tablero.txt" t="Include" />
-          <e p="5x5_45.txt" t="Include" />
-          <e p="5x5_45_tablero.txt" t="Include" />
-          <e p="5x5_55.txt" t="Include" />
-          <e p="5x5_55_tablero.txt" t="Include" />
-          <e p="5x5_65.txt" t="Include" />
-          <e p="5x5_65_tablero.txt" t="Include" />
           <e p="Backtracking.cs" t="Include" />
           <e p="Cell.cs" t="Include" />
-          <e p="input.txt" t="Include" />
-          <e p="input2.txt" t="Include" />
-          <e p="input3.txt" t="Include" />
-          <e p="input4.txt" t="Include" />
-          <e p="input5.txt" t="Include" />
-          <e p="input6.txt" t="Include" />
           <e p="Line.cs" t="Include" />
           <e p="MathematicalApproach.cs" t="Include" />
           <e p="Matrix.cs" t="Include" />
           <e p="nonogramSolver.cs" t="Include" />
+          <e p="Puzzles" t="Include">
+            <e p="10x10_45.txt" t="Include" />
+            <e p="10x10_45_tablero.txt" t="Include" />
+            <e p="10x10_55.txt" t="Include" />
+            <e p="10x10_55_tablero.txt" t="Include" />
+            <e p="10x10_65.txt" t="Include" />
+            <e p="10x10_65_tablero.txt" t="Include" />
+            <e p="15x15_45.txt" t="Include" />
+            <e p="15x15_45_tablero.txt" t="Include" />
+            <e p="15x15_55.txt" t="Include" />
+            <e p="15x15_55_tablero.txt" t="Include" />
+            <e p="15x15_65.txt" t="Include" />
+            <e p="15x15_65_tablero.txt" t="Include" />
+            <e p="20x20_45.txt" t="Include" />
+            <e p="20x20_45_tablero.txt" t="Include" />
+            <e p="20x20_55.txt" t="Include" />
+            <e p="20x20_55_tablero.txt" t="Include" />
+            <e p="20x20_65.txt" t="Include" />
+            <e p="20x20_65_tablero.txt" t="Include" />
+            <e p="5x5_45.txt" t="Include" />
+            <e p="5x5_45_tablero.txt" t="Include" />
+            <e p="5x5_55.txt" t="Include" />
+            <e p="5x5_55_tablero.txt" t="Include" />
+            <e p="5x5_65.txt" t="Include" />
+            <e p="5x5_65_tablero.txt" t="Include" />
+            <e p="input.txt" t="Include" />
+            <e p="input2.txt" t="Include" />
+            <e p="input3.txt" t="Include" />
+            <e p="input4.txt" t="Include" />
+            <e p="input5.txt" t="Include" />
+            <e p="input6.txt" t="Include" />
+            <e p="input7.txt" t="Include" />
+            <e p="input8.txt" t="Include" />
+          </e>
           <e p="Visuals" t="Include">
             <e p="Board.cs" t="Include" />
             <e p="Cells.cs" t="Include" />
+            <e p="MainMenu.cs" t="Include" />
+          </e>
+        </e>
+        <e p="TextMesh Pro" t="Include">
+          <e p="Examples &amp; Extras" t="Include">
+            <e p="Fonts" t="Include">
+              <e p="Anton OFL.txt" t="Include" />
+              <e p="Bangers - OFL.txt" t="Include" />
+              <e p="Oswald-Bold - OFL.txt" t="Include" />
+            </e>
+            <e p="Scripts" t="Include">
+              <e p="Benchmark01.cs" t="Include" />
+              <e p="Benchmark01_UGUI.cs" t="Include" />
+              <e p="Benchmark02.cs" t="Include" />
+              <e p="Benchmark03.cs" t="Include" />
+              <e p="Benchmark04.cs" t="Include" />
+              <e p="CameraController.cs" t="Include" />
+              <e p="ChatController.cs" t="Include" />
+              <e p="EnvMapAnimator.cs" t="Include" />
+              <e p="ObjectSpin.cs" t="Include" />
+              <e p="ShaderPropAnimator.cs" t="Include" />
+              <e p="SimpleScript.cs" t="Include" />
+              <e p="SkewTextExample.cs" t="Include" />
+              <e p="TeleType.cs" t="Include" />
+              <e p="TextConsoleSimulator.cs" t="Include" />
+              <e p="TextMeshProFloatingText.cs" t="Include" />
+              <e p="TextMeshSpawner.cs" t="Include" />
+              <e p="TMP_DigitValidator.cs" t="Include" />
+              <e p="TMP_ExampleScript_01.cs" t="Include" />
+              <e p="TMP_FrameRateCounter.cs" t="Include" />
+              <e p="TMP_PhoneNumberValidator.cs" t="Include" />
+              <e p="TMP_TextEventCheck.cs" t="Include" />
+              <e p="TMP_TextEventHandler.cs" t="Include" />
+              <e p="TMP_TextInfoDebugTool.cs" t="Include" />
+              <e p="TMP_TextSelector_A.cs" t="Include" />
+              <e p="TMP_TextSelector_B.cs" t="Include" />
+              <e p="TMP_UiFrameRateCounter.cs" t="Include" />
+              <e p="TMPro_InstructionOverlay.cs" t="Include" />
+              <e p="VertexColorCycler.cs" t="Include" />
+              <e p="VertexJitter.cs" t="Include" />
+              <e p="VertexShakeA.cs" t="Include" />
+              <e p="VertexShakeB.cs" t="Include" />
+              <e p="VertexZoom.cs" t="Include" />
+              <e p="WarpTextExample.cs" t="Include" />
+            </e>
+          </e>
+          <e p="Fonts" t="Include">
+            <e p="LiberationSans - OFL.txt" t="Include" />
+          </e>
+          <e p="Resources" t="Include">
+            <e p="LineBreaking Following Characters.txt" t="Include" />
+            <e p="LineBreaking Leading Characters.txt" t="Include" />
+            <e p="Shaders" t="Include">
+              <e p="TMP_Bitmap-Custom-Atlas.shader" t="Include" />
+              <e p="TMP_Bitmap-Mobile.shader" t="Include" />
+              <e p="TMP_Bitmap.shader" t="Include" />
+              <e p="TMP_SDF Overlay.shader" t="Include" />
+              <e p="TMP_SDF-Mobile Masking.shader" t="Include" />
+              <e p="TMP_SDF-Mobile Overlay.shader" t="Include" />
+              <e p="TMP_SDF-Mobile.shader" t="Include" />
+              <e p="TMP_SDF-Surface-Mobile.shader" t="Include" />
+              <e p="TMP_SDF-Surface.shader" t="Include" />
+              <e p="TMP_SDF.shader" t="Include" />
+              <e p="TMP_Sprite.shader" t="Include" />
+              <e p="TMPro.cginc" t="Include" />
+              <e p="TMPro_Properties.cginc" t="Include" />
+              <e p="TMPro_Surface.cginc" t="Include" />
+            </e>
+          </e>
+          <e p="Sprites" t="Include">
+            <e p="EmojiOne Attribution.txt" t="Include" />
           </e>
         </e>
       </e>
@@ -57,7 +134,5 @@
       <e p="ProyectoNonogram.sln" t="IncludeFlat" />
       <e p="Temp\bin" t="ExcludeRecursive" />
     </e>
-    <e p="C:\Users\sebas\AppData\local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\sebas\AppData\local\JetBrains\Rider2020.1\resharper-host\local\Transient\ReSharperHost\v201\SolutionCaches\_ProyectoNonogram.824971147.00" t="ExcludeRecursive" />
   </component>
 </project>

@@ -159,6 +159,19 @@ public class Matrix
         return result;
     }
 
+    public override string ToString()
+    {
+        
+        string str = "";
+        foreach (var line in Rows)
+        {
+            str += line + "\n";
+        }
+
+        return str;
+        
+    }
+
 
     public void RemoveDemonMarks() {
         foreach (var row in Rows) {
