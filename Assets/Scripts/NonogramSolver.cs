@@ -4,8 +4,8 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 public class NonogramSolver : MonoBehaviour {
-    private int _height;
-    private int _length;
+    private int Height { get; set;  }
+    private int Length { get; set;  }
 
     private readonly List<List<int>> _rowClues = new List<List<int>>();
     private readonly List<List<int>> _columnClues = new List<List<int>>();
@@ -29,13 +29,13 @@ public class NonogramSolver : MonoBehaviour {
         
         //Draw the Board
         board.LogicalMatrix = LogicalMatrix;
-        board.Draw(_height, _length);
+        board.Draw(Height, Length);
         
         //Adjust Camera
         AdjustCameraSize();
         
         //Execute Bounds
-        matrix = new Matrix(_rowClues, _columnClues, _height, _length, board, board.LogicalMatrix);
+        matrix = new Matrix(_rowClues, _columnClues, Height, Length, board, board.LogicalMatrix);
         matrix.SolveMatrix();
         
         Debug.Log("-----------------------------------------------");
@@ -64,7 +64,7 @@ public class NonogramSolver : MonoBehaviour {
     private void Update() {
         if (MainMenu.showAnimation)
         {
-            board.UpdateCells(_height, _length);
+            board.UpdateCells(Height, Length);
         }
         isFinished = _backtracking.IsFinishedResult;
     }
@@ -76,14 +76,14 @@ public class NonogramSolver : MonoBehaviour {
     }
 
     private void InitializeLogicalMatrix() {
-        LogicalMatrix = new int[_height, _length];
+        LogicalMatrix = new int[Height, Length];
     }
 
     private void AdjustCameraSize() {
         if (Camera.main != null) {
             var main = Camera.main;
-            main.orthographicSize = _height*5 / 2.0f + 10;
-            main.transform.position = new Vector3( _length*5/2.0f, -_height*5/2.0f, -10);
+            main.orthographicSize = Height*5 / 2.0f + 10;
+            main.transform.position = new Vector3( Length*5/2.0f, -Height*5/2.0f, -10);
         }
     }
     
@@ -95,8 +95,8 @@ public class NonogramSolver : MonoBehaviour {
             if (!_skip) {
                 _skip = true;
                 var words = line.Split(',');
-                _height = int.Parse(words[0].Trim());
-                _length = int.Parse(words[1].Trim());
+                Height = int.Parse(words[0].Trim());
+                Length = int.Parse(words[1].Trim());
             }
             else {
                 if (!line.Contains("FILAS")) {

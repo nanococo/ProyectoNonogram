@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Visuals {
     public class Board : MonoBehaviour {
@@ -8,12 +9,12 @@ namespace Visuals {
         public Cells[,] BoardCells { get; set; }
 
         public int[,] LogicalMatrix { get; set; }
-
+        
 
         public void Draw(int height, int width) {
             BoardCells = new Cells[height, height];
 
-            var printHelper = "";
+            //var printHelper = "";
 
             for (var i = 0; i < height; i++) {
                 for (var j = 0; j < width; j++) {
@@ -24,13 +25,13 @@ namespace Visuals {
                     newTransform.position = new Vector2(j * 5, i * -5);
 
                     BoardCells[i, j] = newCell.GetComponent<Cells>();
-                    printHelper += "X";
+                    //printHelper += "X";
                 }
 
-                printHelper += "\n";
+                //printHelper += "\n";
             }
 
-            Debug.Log(printHelper);
+            //Debug.Log(printHelper);
         }
 
         public void UpdateCells(int height, int width) {
